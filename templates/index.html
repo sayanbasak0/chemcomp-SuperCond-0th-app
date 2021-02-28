@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Super Composition</title>
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js" crossorigin="anonymous"></script>
+        
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
+        <link rel="stylesheet" href="{{custom_link}}static/mystyle.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.1.1/css/font-awesome.min.css"/>
+        
+        <style>
+            /* First image (Logo. Full height) */
+            .bgimg-1 {
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url("/static/supercover.jpg");
+                min-height: 100%;
+                color:#000;
+            }
+        </style>
+    </head>
+    
+    <body class="bgimg-1">
+        <!-- Sidebar -->
+            <div style="background:rgba(255,255,255,0.5);">
+            <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
+                <form action="/" method="POST">
+                    <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
+                    <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-home"></i> Home</button>
+                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
+                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
+                </form>
+                </div>
+            
+            <!-- Page Content -->
+            <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+            <script>
+                // Side navigation
+                function w3_open() {
+                    document.getElementById("mySidebar").style.display = "block";
+                    document.getElementById("myOverlay").style.display = "block";
+                }
+
+                function w3_close() {
+                    document.getElementById("mySidebar").style.display = "none";
+                    document.getElementById("myOverlay").style.display = "none";
+                }
+            </script>
+            <!-- Header -->
+            <header class="bgimg-1 w3-display-container w3-theme w3-padding" id="myHeader">
+                <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
+                <div class="w3-center">
+                    <h4></h4>
+                    <div class="w3-display-top">
+                        <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-refresh fa-spin"> </i> {{head1}}</span>
+                    </div>
+                    <h1 class="w3-xxxlarge w3-animate-bottom"> </h1>
+                    <!-- <div class="w3-padding-32">
+                        <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:700;">GET STARTED</button>
+                    </div> -->
+                </div>
+            </header>
+            <div id="Home-Tab" style="padding:10%">
+                <h2>
+                    What is a Superconductor?
+                </h2>
+                <p>
+                    A superconductor is a material which can conduct electricity without any resistance.
+                    The material becomes "superconducting" only below a certain temperature &#151; Critical Temperature.
+                </p>
+                <h3>
+                    The Challenge: 
+                </h3>
+                <p>
+                    Finding a material that becomes superconducting at room temperatures.
+                </p>
+                <h3>
+                    Who will benefit from it?
+                </h3>
+                <ul>
+                    <li> <h4>Energy Industry:</h4> Efficient energy transmission. </li>
+                    <li> <h4>Quantum Computing:</h4> Reducing operational cost for Quantum computers. </li>
+                    <li> <h4>Transportation:</h4> MagLev </li>
+                    <li> <h4>Researchers:</h4> Those who leverage the novel properties of superconductors for exploring and discovering novelties of other materials. </li>
+                </ul>
+                <h2>
+                    Useful Links:
+                </h2>
+                <ul>
+                    <li>
+                        This app: <a href="https://myzerothapp.herokuapp.com/" target="_blank" rel="noopener noreferrer">https://myzerothapp.herokuapp.com/</a>
+                    </li>
+                    <li>
+                        Github repo: <a href="https://github.com/sayanbasak0/chemcomp-SuperCond-0th-app" target="_blank" rel="noopener noreferrer">https://github.com/sayanbasak0/chemcomp-SuperCond-0th-app</a>
+                    </li>
+                    <li>
+                        Periodic Table: <a href="https://adrianroselli.com/2019/05/periodic-table-of-the-elements.html" target="_blank" rel="noopener noreferrer">https://adrianroselli.com/2019/05/periodic-table-of-the-elements.html</a>
+                    </li>
+                    <li>
+                        SuperCon Database: 
+                        <ul>
+                            <li>
+                                <a href="https://supercon.nims.go.jp/en/" target="_blank" rel="noopener noreferrer">https://supercon.nims.go.jp/en/</a>.
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        COD Database: 
+                        <ul>
+                            <li>
+                                <a href="https://wiki.crystallography.net/cod_mysql_schema/" target="_blank" rel="noopener noreferrer">https://wiki.crystallography.net/cod_mysql_schema/</a>
+                            </li>
+                            <li>
+                                <a href="https://wiki.crystallography.net/howtoquerycod/" target="_blank" rel="noopener noreferrer">https://wiki.crystallography.net/howtoquerycod/</a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                </ul>
+                <h2>
+                    References:
+                </h2>
+                <ol>
+                    <li> 
+                        Stanev, V., Oses, C., Kusne, A.G. <i>et al.</i> <u>Machine learning modeling of superconducting critical temperature.</u> <i>npj Comput Mater</i> <b>4</b>, 29 (2018). <a href="https://doi.org/10.1038/s41524-018-0085-8" target="_blank" rel="noopener noreferrer">https://doi.org/10.1038/s41524-018-0085-8</a> 
+                    </li>
+                    <li> 
+                        Jha, D., Ward, L., Paul, A. <i>et al.</i> <u>ElemNet: Deep Learning the Chemistry of Materials From Only Elemental Composition.</u> <i>Sci Rep</i> <b>8</b>, 17593 (2018). <a href="https://doi.org/10.1038/s41598-018-35934-y" target="_blank" rel="noopener noreferrer">https://doi.org/10.1038/s41598-018-35934-y</a> 
+                    </li>
+                    <li>
+                        Zhang, Ruisheng <i>et al.</i> <u>Using Deep Learning for Compound Selectivity Prediction.</u> <i>Current computer-aided drug design</i> vol. 12,1 (2016): 5-14. <a href="https://doi.org/10.2174/1573409912666160219113250">doi:10.2174/1573409912666160219113250</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </body>
+</html>

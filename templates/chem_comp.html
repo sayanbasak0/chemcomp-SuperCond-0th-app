@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Super Composition</title>
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js" crossorigin="anonymous"></script>
+        
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
+        <link rel="stylesheet" href="{{custom_link}}static/mystyle.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.3.0/font-awesome-animation.css"/>
+        
+        <style>
+            /* First image (Logo. Full height) */
+            .bgimg-1 {
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+            .bgimg-1 {
+                background-image: url("/static/supercover.jpg");
+                min-height: 100%;
+            }
+        </style>
+    </head>
+    
+    <body >
+        <!-- Sidebar -->
+        <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
+            <form action="/" method="POST">
+                <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="home"><i class="fa fa-home"></i> Home</button>
+                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-flask"></i> Chemical Composition</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
+            </form>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+        <script>
+            // Side navigation
+            function w3_open() {
+                document.getElementById("mySidebar").style.display = "block";
+                document.getElementById("myOverlay").style.display = "block";
+            }
+
+            function w3_close() {
+                document.getElementById("mySidebar").style.display = "none";
+                document.getElementById("myOverlay").style.display = "none";
+            }
+        </script>
+        <!-- <h1>{{head1}}</h1> -->
+        <!-- Header -->
+        <header class="w3-display-container w3-theme w3-padding" id="myHeader">
+            <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
+            <div class="w3-center">
+                <!-- <h4></h4> -->
+                <div class="w3-display-top">
+                    <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-refresh fa-spin"> </i> {{head1}}</span>
+                </div>
+                <h1 class="w3-xxxlarge w3-animate-bottom"><span class="w3-center"> Find Chemical Composition <i class="fa fa-flask faa-shake animated faa-fast"></i></span></h1>
+                <!-- <div class="w3-padding-32">
+                    <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:700;">GET STARTED</button>
+                </div> -->
+            </div>
+        </header>
+        <div class="tab">
+            <div class="dropdown">
+                <button class="dropbtn" id="dropbutton">Select Element(s) from <i class="fa fa-caret-down"></i></button>
+                <div class="dropdown-content">
+                    <button class="tablinks" onclick="openTab(event, 'Periodic-Tab')" id="defaultOpen-Periodic-Tab">Periodic Table</button>
+                    <button class="tablinks" onclick="openTab(event, 'Long-Periodic-Tab')" id="defaultOpen-Long-Periodic-Tab">Long Periodic Table</button>
+                </div>
+            </div>
+            <button class="tablinks" onclick="openTab(event, 'Prediction-Tab')" id="defaultOpen-Prediction-Tab">Prediction</button>
+            <button class="tablinks" onclick="openTab(event, 'Method-Tab')" id="defaultOpen-Method-Tab">Method</button>
+        </div>
+
+        <div id="Method-Tab" class="tabcontent" style="overflow-y:scroll">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Method</span>
+            </div>
+            <h3>
+                Data:
+            </h3>
+            <p>
+                Superconducting Material Database from NIMS.
+                <a href="https://supercon.nims.go.jp/en/" target="_blank" rel="noopener noreferrer">SuperCon</a>.
+            </p>
+            <h3> Machine Learning model: </h3>
+            <p> Random Forest Regressor </p>
+            <h3> Input Features: </h3>
+            <p> Multi one-hot encoded Elements present in the chemical formula + Critical Temperature. </p>
+            <h3> Output: </h3>
+            <p> Chemical Composition with relative proportion of elements. </p>
+            <h3> How the optimal composition is determined? </h3>
+            <p>
+                The ML-model produces a chemical composition for each critical temperature in the 0-200 K range.
+                <br>
+                The maximum critical temperature is determined from the output composition becoming constant in the range T<sub>c</sub>&#151;200 K.
+                <br>
+                The optimal composition is the output at Max T<sub>c</sub> found.
+            </p>
+            <h3> What are the colors on the right/bottom of elements (buttons) in Periodic table. </h3>
+            <p>
+                <ul>
+                    <li> <div style="display:inline; color:rgb(0, 0, 0); font-weight: bold;"> Black: </div> Element not selected. </li>
+                    <li> <div style="display:inline; color:rgb(200, 0, 0); font-weight: bold;"> Red: </div> Element not selected and the relative amount in the composition. </li>
+                    <li> <div style="display:inline; color:rgb(200, 100, 0); font-weight: bold;"> Orange: </div> Element selected. </li>
+                    <li> <div style="display:inline; color:rgb(0, 200, 0); font-weight: bold;"> Green: </div> Element selected and the relative amount in the composition. </li>
+                </ul>
+            </p>
+        </div>
+        <div id="Prediction-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Prediction</span>
+            </div>
+            <h2>
+                {% for symb_x in comp_list %}
+                    {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
+                {% endfor %}
+            </h2>
+            <h3>The Chemical Composition of superconductor predicted by the Random-Forest model for a maximum T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
+            <p >
+                {{ plot_div | safe }}
+            
+                {{ plot_script | safe }}
+            </p>
+        </div>
+        <div id="Periodic-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Periodic Table</span>
+            </div>
+            <div class="shell" >
+                {% for elem in p_table %}
+                    <div class="ck-button button-{{elem}}" style="background:linear-gradient(90deg, 
+                    rgba({{200-200*selems[elem]}}, {{200*selems[elem]}}, 0, 1) 0%, 
+                    rgba({{200-200*selems[elem]}}, {{200*selems[elem]}}, 0, 1) {{pelems[elem]}}%, 
+                    rgba({{200*selems[elem]}}, {{100*selems[elem]}}, {{0}}, 1) {{pelems[elem]}}%, 
+                    rgba({{200*selems[elem]}}, {{100*selems[elem]}}, {{0}}, 1) 100% )">
+                        <label>
+                            <input class="dis-{{elem}} chk-{{selems[elem]}}" type="checkbox" value="-1" name="{{elem}}" onchange="sync_tabs('{{elem}}')" tabindex="0">
+                            <span class="rep-{{elem}} per-wd" style="height:80%" >{{elem}}</span>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="Long-Periodic-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Long Periodic Table</span>
+            </div>
+            <div class="shellong" >
+                {% for elem in pong_table %}
+                    <div class="ck-button button-{{elem}}" style="background:linear-gradient(0deg, 
+                    rgba({{200-200*selems[elem]}}, {{200*selems[elem]}}, 0, 1) 0%, 
+                    rgba({{200-200*selems[elem]}}, {{200*selems[elem]}}, 0, 1) {{pelems[elem]}}%, 
+                    rgba({{200*selems[elem]}}, {{100*selems[elem]}}, {{0}}, 1) {{pelems[elem]}}%, 
+                    rgba({{200*selems[elem]}}, {{100*selems[elem]}}, {{0}}, 1) 100% )">
+                        <label>
+                            <input class="dis-{{elem}} chk-{{selems[elem]}}" type="checkbox" value="-1" name="{{elem}}" onchange="sync_tabs('{{elem}}')" tabindex="0">
+                            <span class="rep-{{elem}} per-ht" style="width:80%" >{{elem}}</span>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-1">
+            <form id="form1" action="{{custom_link}}chem_comp" method="POST">
+                <p>
+                    <p>
+                        <button type="button" class="select-elems" value="1" name="Select All" onclick="select_all()">Select All</button>
+                        <button type="button" class="select-elems" value="1" name="UnSelect All" onclick="unselect_all()">UnSelect All</button>
+                        <button type="button" class="select-elems" value="1" name="Invert Selection" onclick="invert_selection()">Invert Selection</button>
+                    </p>
+                    <p>
+                        <input id="n-slider" class="n-slider" type="range" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems" onchange="randomly_select('n-slider')"/>
+                        <input id="n-number" class="n-number" type="number" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems again" onchange="randomly_select('n-number')"/>
+                        <button type="button" class="n-button" onclick="randomly_select('n-number')">Element(s) [Select Randomly]</button>
+                    </p>
+                    <p>
+                        <!-- <input id="type-elements" class="type-elements element-list" type="text" placeholder="Selected Elements..." name="Selected Elements" onchange="sync_with_tabs()" >
+                        </input> -->
+                        <div class="text-selected-elements">
+                            Selected Elements:
+                        </div>
+                        <textarea id="type-elements" class="type-elements element-list" placeholder="Type or Select from Periodic Table... " name="Selected Elements" onchange="sync_with_tabs()" ></textarea>
+                        <button type="button" id="parse-elements" class="parse-elements button_box_elements" value="1" name="Selected Elements()" onclick="sync_with_tabs()">Parse and Update Selection</button>
+                    </p>
+                </p>
+                <p>
+                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Chemical Composition for Maximum Critical Temperature</button>
+                </p>
+            </form>
+        </div>
+        <script>
+            var input = document.getElementById("type-elements");
+            input.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById("parse-elements").click();
+                }
+                return false;
+            });
+            
+            function sync_with_tabs() {
+                elms = document.getElementById("type-elements").value;
+                elmsi = elms.split(/[\s,.;:\\\/|+\-\&_\n\r]+/);
+                uchkontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                for(i=0; i<uchkontent.length; i++) {
+                    uchkontent[i].checked = false;
+                }
+                for (i=0; i<elmsi.length; i++) {
+                    buts = document.getElementsByClassName("dis-"+elmsi[i])
+                    for (j=0; j<buts.length; j++) {
+                        buts[j].checked = true;
+                    }
+                    if (buts.length==0){
+                        elmsi.splice(i,1);
+                        i--;
+                    }
+                    else {
+                        var presind = elmsi.indexOf(elmsi[i]);
+                        if (presind<i) {
+                            elmsi.splice(i,1);
+                            i--;
+                        }
+                    }
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+            }
+            function sync_tabs(elm) {
+                elms = document.getElementById("type-elements").value;
+                if (elms.length==0){
+                    elmsi = [];
+                } else {
+                    elmsi = elms.split(/[\s,.;:\\\/|+\-\&_\n\r]+/);
+                }
+                var deleteind = elmsi.indexOf(elm);
+                uchkontent = document.getElementsByClassName("dis-"+elm);
+                if (deleteind>=0) {
+                    elmsi.splice(deleteind,1);
+                    for (i=0; i<uchkontent.length; i++) {
+                        uchkontent[i].checked = false;
+                    }
+                } else {
+                    elmsi.push(elm);
+                    for (i=0; i<uchkontent.length; i++) {
+                        uchkontent[i].checked = true;
+                    }
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+            }
+            function invert_selection() {
+                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                for (i=0; i<chkcontent.length; i++){
+                    chkcontent[i].checked = !(chkcontent[i].checked);
+                }
+                selectell = document.querySelector('.shell');
+                uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var elmsi = [];
+                for (i=0; i<uchkcontent.length; i++) {
+                    if (uchkcontent[i].checked==true) {
+                        elmsi.push(uchkcontent[i].name);
+                    }
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+            }
+            function select_all() {
+                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                for (i=0; i<chkcontent.length; i++){
+                    chkcontent[i].checked = true;
+                }
+                selectell = document.querySelector('.shell');
+                uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var elmsi = [];
+                for (i=0; i<uchkcontent.length; i++) {
+                    elmsi.push(uchkcontent[i].name);
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+            }
+            function unselect_all() {
+                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                for (i=0; i<chkcontent.length; i++){
+                    chkcontent[i].checked = false;
+                }
+                document.getElementById("type-elements").value = "";
+            }
+            function randomly_select(butid) {
+                var bucket = [];
+                var selectell = document.querySelector('.shell');
+                var selectellong = document.querySelector('.shellong');
+                var chkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var chkcontentong = selectellong.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                for (i=0; i<chkcontent.length; i++){
+                    chkcontent[i].checked = false;
+                    chkcontentong[i].checked = false;
+                    bucket.push(i);
+                }
+                var els = document.getElementById(butid).value;
+                if (els>120){
+                    els=120;
+                } else {
+                    if (els<0) {
+                        els = 0;
+                    }
+                }
+                var elmsi = [];
+                for (i=0; i<els; i++){
+                    var randomIndex = Math.floor(Math.random()*bucket.length);
+                    var checkthis = bucket.splice(randomIndex, 1);
+                    chkcontent[checkthis].checked = true;
+                    var checkthat = selectellong.getElementsByClassName(chkcontent[checkthis].className);
+                    checkthat[0].checked = true;
+                    elmsi.splice(0,0,chkcontent[checkthis].name);
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+                document.getElementById("n-slider").value = els;
+                document.getElementById("n-number").value = els;
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+                document.getElementById("update-plot").value = tabName;
+                if (tabName == "Periodic-Tab") {
+                    document.getElementById("dropbutton").innerHTML = 'Periodic Table <i class="fa fa-caret-down"></i>';
+                } else if (tabName == "Long-Periodic-Tab") {
+                    document.getElementById("dropbutton").innerHTML = 'Long Periodic Table <i class="fa fa-caret-down"></i>';
+                } else {
+                    document.getElementById("dropbutton").innerHTML = 'Select Element(s) from <i class="fa fa-caret-down"></i>';
+                }
+            }
+            document.getElementById( "defaultOpen-"+document.getElementById("update-plot").value ).click();
+            chkcontent = document.getElementsByClassName("chk-1");
+            var select_elem_list = [];
+            for (i = 0; i < chkcontent.length; i++) {
+                chkcontent[i].checked = true;
+                var presind = select_elem_list.indexOf(chkcontent[i].name);
+                if (presind<0) {
+                    select_elem_list.push(chkcontent[i].name);
+                }
+            }
+            document.getElementById("type-elements").value = select_elem_list.join(",");
+            discontent = document.querySelectorAll(".dis-Ln,.dis-An,.dis-arrow,.dis-space");
+            for (i = 0; i < discontent.length; i++) {
+                discontent[i].disabled = true;
+            }
+            repcontent = document.getElementsByClassName("rep-arrow");
+            for (i = 0; i < repcontent.length; i++) {
+                repcontent[i].innerHTML = "&#62;&#62;";
+            }
+            var focusable_div = document.getElementsByTagName('div');
+            for (i=0; i<focusable_div.lenght; i++) {
+                focusable_div[i].setAttribute('tabindex', '1');
+            }
+        </script>
+        
+    </body>
+</html>

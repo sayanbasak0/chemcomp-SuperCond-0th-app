@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Super Composition</title>
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js" crossorigin="anonymous"></script>
+        
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
+        <link rel="stylesheet" href="{{custom_link}}static/mystyle2.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.3.0/font-awesome-animation.css"/>
+        
+        <style>
+            /* First image (Logo. Full height) */
+            .bgimg-1 {
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+            .bgimg-1 {
+                background-image: url("/static/supercover.jpg");
+                min-height: 100%;
+            }
+        </style>
+    </head>
+    
+    <body >
+        <!-- Sidebar -->
+        <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
+            <form action="/" method="POST">
+                <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="home"><i class="fa fa-home"></i> Home</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
+                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
+            </form>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+        <script>
+            // Side navigation
+            function w3_open() {
+                document.getElementById("mySidebar").style.display = "block";
+                document.getElementById("myOverlay").style.display = "block";
+            }
+
+            function w3_close() {
+                document.getElementById("mySidebar").style.display = "none";
+                document.getElementById("myOverlay").style.display = "none";
+            }
+        </script>
+        <!-- <h1>{{head1}}</h1> -->
+        <!-- Header -->
+        <header class="w3-display-container w3-theme w3-padding" id="myHeader">
+            <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
+            <div class="w3-center">
+                <!-- <h4></h4> -->
+                <div class="w3-display-top">
+                    <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-refresh fa-spin"> </i> {{head1}}</span>
+                </div>
+                <h1 class="w3-xxxlarge w3-animate-bottom"><span class="w3-center"> Find Critical Temperature from Chemical Composition <i class="fa fa-thermometer-three-quarters faa-burst animated faa-fast"></i></span></h1>
+                <!-- <div class="w3-padding-32">
+                    <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:700;">GET STARTED</button>
+                </div> -->
+            </div>
+        </header>
+        <div class="tab">
+            <div class="dropdown">
+                <button class="dropbtn" id="dropbutton">Compose Chemical Formula from <i class="fa fa-caret-down"></i></button>
+                <div class="dropdown-content">
+                    <button class="tablinks" onclick="openTab(event, 'Periodic-Tab')" id="defaultOpen-Periodic-Tab">Periodic Table</button>
+                    <button class="tablinks" onclick="openTab(event, 'Long-Periodic-Tab')" id="defaultOpen-Long-Periodic-Tab">Long Periodic Table</button>
+                </div>
+            </div>
+            <button class="tablinks" onclick="openTab(event, 'Prediction-Tab')" id="defaultOpen-Prediction-Tab">Prediction</button>
+            <button class="tablinks" onclick="openTab(event, 'Method-Tab')" id="defaultOpen-Method-Tab">Method</button>
+        </div>
+
+        <div id="Method-Tab" class="tabcontent" style="overflow-y:scroll">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Method</span>
+            </div>
+            <h3>
+                Data:
+            </h3>
+            <p>
+                Superconducting Material Database from NIMS.
+                <a href="https://supercon.nims.go.jp/en/" target="_blank" rel="noopener noreferrer">SuperCon</a>.
+            </p>
+            <h3> Machine Learning model: </h3>
+            <p> Random Forest Regressor </p>
+            <h3> Input Features: </h3>
+            <p> Elements relative proportion present in the chemical formula. </p>
+            <h3> Output: </h3>
+            <p> Critical Temperature. </p>
+            
+        </div>
+        <div id="Periodic-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Periodic Table</span>
+            </div>
+            <div class="shell" >
+                {% for elem in p_table %}
+                <div id="button-{{elem}}-s" class="ck-button button-{{elem}}" style="background:linear-gradient(90deg, 
+                                                                                    rgba(0, 200, 0, 1) 0%, 
+                                                                                    rgba(0, 200, 0, 1) {{pelems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) {{pelems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) 100% )">
+                    
+                    <div class="hidden-range dis-{{elem}}">
+                        <input id="range-{{elem}}-s" class="dis-{{elem}} chk-{{selems[elem]}} hidden-range-s range-{{elem}}" type="range" value="{{pelems[elem]/100}}" min=0 max=1 step=0.01 onchange="sync_tabs('range','{{elem}}','s', 0)" tabindex="0">
+                    </div>
+                    <table>
+                        <tr>
+                            <td class="rep-{{elem}} per-wd" style="height:100%" >{{elem}}</td>
+                            <td class="dis-{{elem}}">
+                                <sub id="out-{{elem}}-s" class="display-range out-{{elem}}">
+                                    {{"%.2f"|format(pelems[elem]/100)}}
+                                </sub>
+                                <sub class="hidden-range">
+                                    <input class="hidden-number numb-{{elem}}" id="numb-{{elem}}-s" type="number" min="0" max="1" value="{{pelems[elem]/100}}" step="0.01" onchange="sync_tabs('numb','{{elem}}','s', 0)">
+                                </sub>
+                            </td>
+                        </tr> 
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="Long-Periodic-Tab" class="tabcontent" >
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Long Periodic Table</span>
+            </div>
+            <div class="shellong" >
+                {% for elem in pong_table %}
+                <div id="button-{{elem}}-l" class="ck-button button-{{elem}}" style="background:linear-gradient(0deg, 
+                                                                                    rgba(0, 200, 0, 1) 0%, 
+                                                                                    rgba(0, 200, 0, 1) {{pelems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) {{pelems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) 100% )">
+                        <div style="display:inline-flex">
+                            <div class="hidden-range dis-{{elem}}">
+                                <input id="range-{{elem}}-l" orient="vertical" class="hidden-range-l range-{{elem}}" type="range" value="{{pelems[elem]/100}}" min=0 max=1 step=0.01 onchange="sync_tabs('range','{{elem}}','l', 0)" tabindex="0">
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="rep-{{elem}} per-wd">{{elem}}</td>
+                                </tr>
+                                <tr class="dis-{{elem}}">
+                                    <td >
+                                        <sub id="out-{{elem}}-l" class="display-range out-{{elem}}">
+                                            {{"%.2f"|format(pelems[elem]/100)}}
+                                        </sub>
+                                        <sub class="hidden-range">
+                                            <input class="hidden-number numb-{{elem}}" id="numb-{{elem}}-l" type="number" min="0" max="1" value="{{pelems[elem]/100}}" step="0.01" onchange="sync_tabs('numb','{{elem}}','l', 0)" name="{{elem}}">
+                                        </sub>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="Prediction-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Prediction</span>
+            </div>
+            <h2>
+                {% for symb_x in comp_list %}
+                    {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
+                {% endfor %}
+            </h2>
+            <h3>The superconducting Critical Temperature for the above Chemical Composition predicted by the Random-Forest model is:
+                T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
+            <p >
+                {{ plot_div | safe }}
+            
+                {{ plot_script | safe }}
+            </p>
+        </div>
+        <div class="form-1">
+            <form id="form1" action="{{custom_link}}crit_temp" method="POST">
+                <p>
+                    <p>
+                        <b>n = </b>
+                        <input id="n-number-1" class="n-number" type="number" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems again" onchange="sync_number_with_slider('n-number-1','n-slider-1')"/>
+                        <input id="n-slider-1" class="n-slider" type="range" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems" onchange="sync_number_with_slider('n-slider-1','n-number-1')"/>
+                    </p>
+                    <p>
+                        <b>p = </b>
+                        <input id="n-number-2" class="n-number" type="number" value="{{prop_of_elems}}" min="0" max="1" step="0.01" name="prop of elems again" onchange="sync_number_with_slider('n-number-2','n-slider-2')"/>
+                        <input id="n-slider-2" class="n-slider" type="range" value="{{prop_of_elems}}" min="0" max="1" step="0.01" name="prop of elems" onchange="sync_number_with_slider('n-slider-2','n-number-2')"/>
+                    </p>
+                    <p>
+                        <button id="random_x_equal_p" type="button" class="select-elems-two" onclick="randomly_select()">Randomly Select n={{no_of_elems}} Element(s) with p={{prop_of_elems}}</button>
+                        <button id="reset_x_and_p" type="button" class="select-elems-two" onclick="reset_to_last()">Reset Chemical Formula</button>
+                    </p>
+                    <p>
+                        <button id="equal_p_invert" type="button" class="select-elems" onclick="invert_selection()">Invert Selection with p={{prop_of_elems}}</button>
+                        <button id="equal_p_nonzero" type="button" class="select-elems" onclick="assign_prop('non-zero','equal')">Equalize non-zero Proportions to p={{prop_of_elems}}</button>
+                        <button id="equal_p_zero" type="button" class="select-elems" onclick="assign_prop('zero','equal')">Assign p={{prop_of_elems}} to zero Proportion</button>
+                    </p>
+                    <p>
+                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','random')">Randomize non-zero Proportions</button>
+                        <button type="button" class="select-elems" onclick="assign_prop('zero','random')">Assign random to zero Proportion </button>
+                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','comp')">Take complement of non-zero Proportion</button>
+                    </p>
+                    <p>
+                        <!-- <input id="type-elements" class="type-elements element-list" type="text" placeholder="Selected Elements..." name="Selected Elements" onchange="sync_with_tabs()" >
+                        </input> -->
+                        <div class="text-selected-elements">
+                            Chemical Formula:
+                        </div>
+                        <input type="text" class="hidden-formula" id="formula-last" name="Previous Formula"
+                        value="{% for elem in pong_table %}{{elem}}_{{pelems[elem]/100}},{% endfor %}">
+                    </text>
+                    <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
+                    value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
+                        </text>
+                        <div id="formula">
+                            {% for symb_x in comp_list %}
+                                <!-- {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub> -->
+                                {{symb_x[0]}}<sub>{{symb_x[1]}}</sub>
+                            {% endfor %}
+                        </div>
+                        <textarea id="type-elements" class="type-elements element-list" placeholder="Type or Compose Chemical Formula from Periodic Table... " name="Selected Elements" onchange="sync_with_tabs()" ></textarea>
+                        <button type="button" id="parse-elements" class="parse-elements button_box_elements" value="1" name="Selected Elements()" onclick="sync_with_tabs()">Parse and Update Formula</button>
+                    </p>
+                </p>
+                <p>
+                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Critical Temperature for this Chemical Composition</button>
+                </p>
+            </form>
+        </div>
+        <script>
+            var input = document.getElementById("type-elements");
+            input.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById("parse-elements").click();
+                }
+                return false;
+            });
+            function set_bgcolor(elm,val){
+                var bchkontent = [];
+                bchkontent.push(document.getElementById("button-"+elm+"-s"));
+                bchkontent.push(document.getElementById("button-"+elm+"-l"));
+                var tchkontent = document.getElementsByClassName("out-"+elm);
+                var nchkontent = document.getElementsByClassName("numb-"+elm);
+                var rchkontent = document.getElementsByClassName("range-"+elm);
+                var gradient = ["90","0"];
+                var vprop = Number(val);
+                if (vprop>=0 && vprop<=1) {
+                    var cprop = 0;
+                    if (vprop==0) {
+                        cprop = 1;
+                    } else {
+                        cprop = 0;
+                    }
+                    for (i=0; i<bchkontent.length; i++) {
+                        tchkontent[i].innerHTML = vprop.toFixed(2);
+                        rchkontent[i].value = vprop;
+                        nchkontent[i].value = vprop;
+                        bchkontent[i].style["background"] = "linear-gradient("+gradient[i]+"deg, \
+                            rgba(0, 200, 0, 1) 0%, \
+                            rgba(0, 200, 0, 1) "+vprop*100+"%, \
+                            rgba(200, "+(150+50*cprop)+", "+(100+100*cprop)+", 1) "+vprop*100+"%, \
+                            rgba(200, "+(150+50*cprop)+", "+(100+100*cprop)+", 1) 100% )";
+                    }
+                }
+            }
+            function sync_with_tabs() {
+                var elms = document.getElementById("formula-out").value +","+ document.getElementById("type-elements").value;
+                // console.log(elms);
+                var elmsi = elms.split(/[\s,;:\\\/|+\-\&_\n\r]+/);
+                // console.log(elmsi);
+                var i;
+                var selectellong = document.querySelector('.shellong'); 
+                for (i=0; i<elmsi.length; i++) {
+                    var buts = selectellong.getElementsByClassName("dis-"+elmsi[i])
+                    
+                    if (buts.length==0 || elmsi[i]=="space"){
+                        elmsi.splice(i,1);
+                        while (i<elmsi.length){
+                            if (typeof(elmsi[i]) == 'number'){
+                                elmsi.splice(i,1);
+                            } else {
+                                break;
+                            }
+                        }
+                        i--;
+                    }
+                    else {
+                        var presind = elmsi.indexOf(elmsi[i]);
+                        if (presind<i) {
+                            elmsi.splice(presind,2);
+                            i-=2;
+                        }
+                        if (i+1<elmsi.length){
+                            if (isNaN(elmsi[i+1])){
+                                // console.log(elmsi[i+1]);
+                                elmsi.splice(i+1,0,"1");
+                            } else {
+                                if (elmsi[i+1]>1){
+                                    elmsi.splice(i+1,0,"1");
+                                } else {
+                                    if (elmsi[i+1]==""){
+                                        elmsi.splice(i+1,0,"1");
+                                    }
+                                    if (elmsi[i+1]<=0){
+                                        elmsi.splice(i+1,0,"0");
+                                    }
+                                }
+                            }
+                        } else {
+                            elmsi.splice(i+1,0,"1");
+                        } 
+                        i++;
+                    }
+                }
+                var formula_out = [];
+                var formula = "";
+                for (i=0; i<elmsi.length; i+=2) {
+                    set_bgcolor(elmsi[i],elmsi[i+1]);
+                    if (elmsi[i+1]>0) {
+                        formula_out.push(elmsi[i]+"_"+elmsi[i+1]);
+                        formula += elmsi[i]+"<sub>"+elmsi[i+1]+"</sub> ";
+                    }
+                }
+                document.getElementById("type-elements").value = "";
+                document.getElementById("formula-out").value = formula_out.join(",");
+                document.getElementById("formula").innerHTML = formula;
+                if (document.getElementById("formula-out").value == "") {
+                    document.getElementById("update-plot").disabled = true;
+                } else {
+                    document.getElementById("update-plot").disabled = false;
+                }
+            }
+            function sync_tabs(rn,elm,ls,pm) {
+                var elms = document.getElementById("type-elements").value;
+                
+                var prop = document.getElementById(rn+"-"+elm+"-"+ls).value/1.0;
+                var dprop = document.getElementById(rn+"-"+elm+"-"+ls).step/1.0;
+                if (pm>0) {
+                    prop = prop+dprop;
+                } else if (pm<0) {
+                    prop = prop-dprop;
+                }
+                if (prop>=0 && prop<=1) {
+                    
+                    if (elms == ""){
+                        elms = elm+","+prop;
+                    } else {
+                        elms = elms+","+elm+","+prop;
+                    }
+                    // console.log(elms);
+                    document.getElementById("type-elements").value = elms;
+                    sync_with_tabs();
+                }
+                
+            }
+            function sync_number_with_slider(butid1,butid2) {
+                document.getElementById(butid2).value = document.getElementById(butid1).value ;
+                var nelms = document.getElementById("n-number-1").value;
+                var pelms = document.getElementById("n-number-2").value;
+                document.getElementById("random_x_equal_p").innerHTML = 'Randomly Select n='+nelms+' Element(s) with p='+pelms;
+                document.getElementById("equal_p_invert").innerHTML = 'Invert Selection and assign p='+pelms;
+                document.getElementById("equal_p_nonzero").innerHTML = 'Equalize non-zero Proportions to p='+pelms;
+                document.getElementById("equal_p_zero").innerHTML = 'Assign p='+pelms+' to zero Proportion';
+            }
+            function reset_to_last(){
+                document.getElementById("type-elements").value = document.getElementById("formula-last").value;
+                document.getElementById("formula-out").value = "";
+                sync_with_tabs();
+            }
+            function invert_selection() {
+                var i;
+                var selectellong = document.querySelector('.shellong'); 
+                var ichkcontent = selectellong.querySelectorAll("input:not(.numb-space),hidden-number");
+                var elmsi = [];
+                for (i=0; i<ichkcontent.length; i++){
+                    if (ichkcontent[i].name!="space"){
+                        if (ichkcontent[i].value>0) {
+                            elmsi.push(ichkcontent[i].name+"_0");
+                        } else {
+                            var randomProp = 0.5;
+                            elmsi.push(ichkcontent[i].name+"_"+randomProp);
+                        }
+                    }
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+                sync_with_tabs();
+            }
+            function assign_prop(non_zero,rand_equal) {
+                var i;
+                var selectellong = document.querySelector('.shellong'); 
+                var uchkcontent = selectellong.getElementsByClassName("hidden-number");
+                var elmsi = [];
+                var pelms = document.getElementById("n-number-2").value;
+                for (i=0; i<uchkcontent.length; i++){
+                    if (uchkcontent[i].name!="space"){
+                        if (non_zero=="non-zero"){
+                            if (uchkcontent[i].value>0) {
+                                if (rand_equal=="equal") {
+                                    comProp = pelms;
+                                }
+                                if (rand_equal=="comp") {
+                                    comProp = 1-uchkcontent[i].value;
+                                }
+                                if (rand_equal=="random") {
+                                    comProp = 1-Math.random();
+                                }
+                                elmsi.push(uchkcontent[i].name+"_"+comProp);
+                            }
+                        }
+                        if (non_zero=="zero"){
+                            if (uchkcontent[i].value==0) {
+                                if (rand_equal=="equal") {
+                                    comProp = pelms;
+                                }
+                                if (rand_equal=="comp") {
+                                    comProp = 1-uchkcontent[i].value;
+                                }
+                                if (rand_equal=="random") {
+                                    comProp = 1-Math.random();
+                                }
+                                elmsi.push(uchkcontent[i].name+"_"+comProp);
+                            }
+                        }
+                    }
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+                // document.getElementById("n-slider-2").value = pelms;
+                // document.getElementById("n-number-2").value = pelms;
+                sync_with_tabs();
+            }
+            function randomly_select() {
+                var i;
+                var bucket = [];
+                var selectellong = document.querySelector('.shellong'); 
+                var chkcontent = selectellong.getElementsByClassName("hidden-number");
+                
+                // console.log(chkcontent.length);
+                for (i=0; i<chkcontent.length; i++){
+                    if (chkcontent[i].name!="space"){
+                        bucket.push(i);
+                    } 
+                }
+                // console.log(chkcontent.length);
+                
+                var nelms = document.getElementById("n-number-1").value;
+                if (nelms>120){
+                    nelms=120;
+                } else {
+                    if (nelms<0) {
+                        nelms = 0;
+                    }
+                }
+                var pelms = document.getElementById("n-number-2").value;
+                if (pelms>1){
+                    pelms=1;
+                } else {
+                    if (pelms<0) {
+                        pelms = 0;
+                    }
+                }
+                var elmsi = [];
+                for (i=0; i<nelms; i++){
+                    var randomIndex = Math.floor(Math.random()*bucket.length);
+                    var checkthis = bucket.splice(randomIndex, 1);
+                    // console.log(chkcontent[checkthis]);
+                    var name_el = chkcontent[checkthis].name;
+                    elmsi.splice(0,0,name_el+"_"+pelms);
+                }
+                for (i=0; i<bucket.length; i++){
+                    var checkthis = bucket[i];
+                    var name_el= chkcontent[checkthis].name;
+                    elmsi.splice(0,0,name_el+"_0");
+                }
+                document.getElementById("type-elements").value = elmsi.join(",");
+                // document.getElementById("n-slider-1").value = nelms;
+                // document.getElementById("n-number-1").value = nelms;
+                
+                sync_with_tabs();
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+                document.getElementById("update-plot").value = tabName;
+                if (tabName == "Periodic-Tab") {
+                    document.getElementById("dropbutton").innerHTML = 'Periodic Table <i class="fa fa-caret-down"></i>';
+                } else if (tabName == "Long-Periodic-Tab") {
+                    document.getElementById("dropbutton").innerHTML = 'Long Periodic Table <i class="fa fa-caret-down"></i>';
+                } else {
+                    document.getElementById("dropbutton").innerHTML = 'Compose Chemical Formula from <i class="fa fa-caret-down"></i>';
+                }
+            }
+            document.getElementById( "defaultOpen-"+document.getElementById("update-plot").value ).click();
+            
+            var select_elem_list = [];
+            document.getElementById("type-elements").value = select_elem_list.join(",");
+            discontent = document.querySelectorAll(".dis-Ln,.dis-An,.dis-arrow,.dis-space");
+            for (i = 0; i < discontent.length; i++) {
+                discontent[i].style = "display:none;";
+            }
+            repcontent = document.getElementsByClassName("rep-arrow");
+            for (i = 0; i < repcontent.length; i++) {
+                repcontent[i].innerHTML = "&#62;&#62;";
+            }
+            var focusable_div = document.getElementsByTagName('div');
+            for (i=0; i<focusable_div.lenght; i++) {
+                focusable_div[i].setAttribute('tabindex', '1');
+            }
+            sync_with_tabs();
+        </script>
+        
+    </body>
+</html>
