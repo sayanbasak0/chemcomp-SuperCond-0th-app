@@ -368,7 +368,7 @@ no_of_elems2 = 4
 prop_of_elems2 = 0.5
 def update_composition(dict_new):
     global dict_2,defaultab2,no_of_elems2,prop_of_elems2
-    selected_elems = {elem:float(prop) for elem_prop in dict_new.get('Selected Elements').split(',') for elem, prop in elem_prop.split('_')}
+    selected_elems = {elem_prop.split('_')[0]:float(elem_prop.split('_')[1]) for elem_prop in dict_new.get('Chemical Formula').split(',') }
     if dict_new.get('number of elems'):
         no_of_elems = int(dict_new.get('number of elems'))
     if dict_new.get('prop of elems'):

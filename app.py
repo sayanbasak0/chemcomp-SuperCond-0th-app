@@ -65,7 +65,7 @@ def crit_temp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems = elements.dict_
+        selems = elements.dict_2
         defaultab = "Periodic-Tab"
         no_of_elems = 4
         prop_of_elems = 0.5
@@ -92,7 +92,7 @@ def chem_comp():
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
-        selems,defaultab,no_of_elems,prop_of_elems = elements.update(request.form)
+        selems,defaultab,no_of_elems,prop_of_elems = elements.update_elements(request.form)
         if request.form.get("Update Plot"):
             plot_script,plot_div,pelems,maxTc,comp_list = plot_temp.update_plot(selems)
         else:
@@ -113,7 +113,7 @@ def chem_comp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems = elements.dict_
+        selems = elements.dict_2
         defaultab = "Periodic-Tab"
         no_of_elems = 4
         prop_of_elems = 0.5

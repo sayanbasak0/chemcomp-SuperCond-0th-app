@@ -59,7 +59,7 @@
                 <div class="w3-display-top">
                     <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-refresh fa-spin"> </i> {{head1}}</span>
                 </div>
-                <h1 class="w3-xxxlarge w3-animate-bottom"><span class="w3-center"> Find Critical Temperature from Chemical Composition <i class="fa fa-thermometer-three-quarters faa-burst animated faa-fast"></i></span></h1>
+                <h1 class="w3-xxxlarge w3-animate-bottom"><span class="w3-center"> Compute Critical Temperature <i class="fa fa-thermometer-three-quarters faa-bounce animated faa-slow"></i></span></h1>
                 <!-- <div class="w3-padding-32">
                     <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:700;">GET STARTED</button>
                 </div> -->
@@ -203,9 +203,9 @@
                         <button id="equal_p_zero" type="button" class="select-elems" onclick="assign_prop('zero','equal')">Assign p={{prop_of_elems}} to zero Proportion</button>
                     </p>
                     <p>
+                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','comp')">Take complement of non-zero Proportion</button>
                         <button type="button" class="select-elems" onclick="assign_prop('non-zero','random')">Randomize non-zero Proportions</button>
                         <button type="button" class="select-elems" onclick="assign_prop('zero','random')">Assign random to zero Proportion </button>
-                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','comp')">Take complement of non-zero Proportion</button>
                     </p>
                     <p>
                         <!-- <input id="type-elements" class="type-elements element-list" type="text" placeholder="Selected Elements..." name="Selected Elements" onchange="sync_with_tabs()" >
@@ -215,15 +215,16 @@
                         </div>
                         <input type="text" class="hidden-formula" id="formula-last" name="Previous Formula"
                         value="{% for elem in pong_table %}{{elem}}_{{pelems[elem]/100}},{% endfor %}">
-                    </text>
-                    <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
-                    value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
-                        </text>
+                    
+                        <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
+                        value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
+                        
                         <div id="formula">
                             {% for symb_x in comp_list %}
                                 <!-- {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub> -->
                                 {{symb_x[0]}}<sub>{{symb_x[1]}}</sub>
                             {% endfor %}
+                            
                         </div>
                         <textarea id="type-elements" class="type-elements element-list" placeholder="Type or Compose Chemical Formula from Periodic Table... " name="Selected Elements" onchange="sync_with_tabs()" ></textarea>
                         <button type="button" id="parse-elements" class="parse-elements button_box_elements" value="1" name="Selected Elements()" onclick="sync_with_tabs()">Parse and Update Formula</button>
