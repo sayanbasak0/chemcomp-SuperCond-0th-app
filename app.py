@@ -13,7 +13,6 @@ from const_trans import constituent_transformer # required to load scikit-learn 
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
 RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
-print(RANDOM_SESS_KEY)
 
 app = Flask(__name__, static_url_path='/static' )
 
@@ -133,9 +132,38 @@ def chem_comp():
                                 no_of_elems=no_of_elems,
                                 custom_link=mylink)
     
-
+import glob
+import os
+import time
 if __name__== '__main__':
-    parse_elements = elements.elements_parser(make_file=True,random_session=RANDOM_SESS_KEY)
+    # cleaning old files
+    files = glob.glob("elements_sess?_*.pkl")
+    fileSessKeys = []
+    for file in files:
+        currentTime = time.time()
+        fileSessKey = file.split("_")[2].split(".")[0] 
+        fileModTimes = []
+        for i in range(1,3,1):
+            try:
+                fileModTime = os.path.getmtime(f"elements_sess{i}_{fileSessKey}.pkl")
+                fileModTimes.append(fileModTime)
+            except FileNotFoundError:
+                pass
+        if fileModTimes:
+            fileModTime = max(fileModTimes)
+            if (currentTime-fileModTime>600):
+                print(f"Deleting Stale Files: elements_sess?_{fileSessKey}.pkl - Last Modified: {(currentTime-fileModTime)/3600:.2f} hrs ago")
+                for i in range(1,3,1):
+                    try:
+                        os.remove(f"elements_sess{i}_{fileSessKey}.pkl")
+                    except FileNotFoundError:
+                        pass
+            else:
+                fileSessKeys.append(fileSessKey)
+    while RANDOM_SESS_KEY in fileSessKeys:
+        RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
+    print(f"Session: {RANDOM_SESS_KEY}")
+    parse_elements = elements.elements_parser(make_file=True, random_session=RANDOM_SESS_KEY)
 
     # app.run(port=8000, debug=True)
     app.run(port=33507)
