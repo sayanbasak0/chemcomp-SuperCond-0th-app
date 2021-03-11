@@ -12,10 +12,8 @@ from const_trans import constituent_transformer # required to load scikit-learn 
 
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
-
-plot_Composition = plot_compos.composition_8elem()
-get_Temperature = get_Tc.temperature_8elem()
-parse_elements = elements.elements_parser()
+RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
+print(RANDOM_SESS_KEY)
 
 app = Flask(__name__, static_url_path='/static' )
 
@@ -41,13 +39,13 @@ def index():
 
 @app.route('/crit_temp',methods = ['POST', 'GET'])
 def crit_temp():
-    p_table = parse_elements.list_1
-    pong_table = parse_elements.list_2
+    get_Temperature = get_Tc.temperature_8elem()
+    parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
     print(request.form.get('redirect'))
     print(request.form.get('Critical Temperature redirect'))
     if request.method == 'POST':
-        selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
+        p_table,pong_table,selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
         if request.form.get("Update Plot"):
             defaultab = "Prediction-Tab"
             Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
@@ -73,7 +71,7 @@ def crit_temp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
+        p_table,pong_table,selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
         Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
         return render_template('crit_temp.html', 
                                 p_table=p_table, 
@@ -92,12 +90,12 @@ def crit_temp():
 
 @app.route('/chem_comp',methods = ['POST', 'GET'])
 def chem_comp():
-    p_table = parse_elements.list_1
-    pong_table = parse_elements.list_2
+    plot_Composition = plot_compos.composition_8elem()
+    parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
-        selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
+        p_table,pong_table,selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
         if request.form.get("Update Plot"):
             defaultab = "Prediction-Tab"
             plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.update_plot(selems)
@@ -119,7 +117,7 @@ def chem_comp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
+        p_table,pong_table,selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
         plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.update_plot(selems)
         return render_template('chem_comp.html', 
                                 p_table=p_table, 
@@ -137,6 +135,8 @@ def chem_comp():
     
 
 if __name__== '__main__':
+    parse_elements = elements.elements_parser(make_file=True,random_session=RANDOM_SESS_KEY)
+
     # app.run(port=8000, debug=True)
     app.run(port=33507)
 
