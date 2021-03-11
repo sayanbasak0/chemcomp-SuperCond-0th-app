@@ -8,8 +8,8 @@ def gb1(elem):
     global count_1
     if elem not in ["An","Ln","arrow","space"]:
         if elem not in dict_1.keys():
-            dict_1[elem] = 1
-            dict_2[elem] = 1
+            dict_1[elem] = 0
+            dict_2[elem] = 0
             pos_[elem] = [count_1,0]
         else:
             pos_[elem][0] = count_1
@@ -26,8 +26,8 @@ def gb2(elem):
     global count_2
     if elem not in ["An","Ln","arrow","space"]:
         if elem not in dict_1.keys():
-            dict_1[elem] = 1
-            dict_2[elem] = 1
+            dict_1[elem] = 0
+            dict_2[elem] = 0
             pos_[elem] = [count_2,0]
         else:
             pos_[elem][0] = count_2
@@ -343,41 +343,47 @@ list_2.append(gb1("Lv"))
 list_2.append(gb1("Ts"))
 list_2.append(gb1("Og"))
 
-
+dict_1["B"] = 1
+dict_1["Mg"] = 1
 defaultab1 = "Periodic-Tab"
 no_of_elems1 = 4
-prop_of_elems1 = 0.5
+selected_elems1 = ["B,Mg"]
 def update_elements(dict_new):
-    global dict_1,defaultab1,no_of_elems1,prop_of_elems1
-    selected_elems = dict_new.get('Selected Elements').split(',')
-    if dict_new.get('number of elems'):
-        no_of_elems = int(dict_new.get('number of elems'))
-    if dict_new.get('prop of elems'):
-        prop_of_elems = float(dict_new.get('prop of elems'))
-    if dict_new.get('Update Plot'):
-        defaultab = dict_new['Update Plot']
+    global dict_1,defaultab1,no_of_elems1,selected_elems1
+    if dict_new.get('Selected Elements'):
+        selected_elems1 = dict_new.get('Selected Elements').split(',')
         for dkey in dict_1.keys():
-            if dkey in selected_elems:
+            if dkey in selected_elems1:
                 dict_1[dkey] = 1
             elif dict_1[dkey]!=-1:
                 dict_1[dkey] = 0
-    return dict_1,defaultab1,no_of_elems1,prop_of_elems1
+    if dict_new.get('number of elems'):
+        no_of_elems1 = int(dict_new.get('number of elems'))
+    if dict_new.get('Update Plot'):
+        defaultab1 = dict_new['Update Plot']
+        
+    return dict_1,defaultab1,no_of_elems1
 
+dict_2["B"] = 0.67
+dict_2["Mg"] = 0.33
 defaultab2 = "Periodic-Tab"
 no_of_elems2 = 4
 prop_of_elems2 = 0.5
+selected_elems2 = {"B":0.67,"Mg":0.33}
 def update_composition(dict_new):
-    global dict_2,defaultab2,no_of_elems2,prop_of_elems2
-    selected_elems = {elem_prop.split('_')[0]:float(elem_prop.split('_')[1]) for elem_prop in dict_new.get('Chemical Formula').split(',') }
-    if dict_new.get('number of elems'):
-        no_of_elems = int(dict_new.get('number of elems'))
-    if dict_new.get('prop of elems'):
-        prop_of_elems = float(dict_new.get('prop of elems'))
-    if dict_new.get('Update Plot'):
-        defaultab = dict_new['Update Plot']
+    global dict_2,defaultab2,no_of_elems2,prop_of_elems2,selected_elems2
+    if dict_new.get('Chemical Formula'):
+        selected_elems2 = {elem_prop.split('_')[0]:float(elem_prop.split('_')[1]) for elem_prop in dict_new.get('Chemical Formula').strip(",").split(',') }
         for dkey in dict_2.keys():
-            if dkey in selected_elems:
-                dict_2[dkey] = selected_elems[dkey]
+            if dkey in selected_elems2:
+                dict_2[dkey] = selected_elems2[dkey]
             elif dict_2[dkey]!=-1:
                 dict_2[dkey] = 0
-    return dict_2,defaultab,no_of_elems,prop_of_elems
+    if dict_new.get('number of elems'):
+        no_of_elems2 = int(dict_new.get('number of elems'))
+    if dict_new.get('prop of elems'):
+        prop_of_elems2 = float(dict_new.get('prop of elems'))
+    if dict_new.get('Update Plot'):
+        defaultab2 = dict_new['Update Plot']
+        
+    return dict_2,defaultab2,no_of_elems2,prop_of_elems2
