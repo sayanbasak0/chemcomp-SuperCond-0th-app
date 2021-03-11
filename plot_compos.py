@@ -2,9 +2,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error 
 from const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
-import warnings 
-warnings.filterwarnings('ignore')
-warnings.filterwarnings('ignore', category=DeprecationWarning)
+# import warnings 
+# warnings.filterwarnings('ignore')
+# warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 import numpy as np
 import pandas as pd
@@ -17,11 +17,17 @@ from bokeh.plotting import figure
 from bokeh.embed import file_html,components
 from bokeh.models import Label,Legend,HoverTool,ColumnDataSource
 from bokeh.colors import HSL
+import dill
 
 class composition_8elem:
     def __init__(self):
+        pass
+    def load_model(self):
         # load model and define global as class variables
+        # from const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
         self.model = joblib.load("composTc_model_8elem.pkl")
+        # with open("../../sc_data_inc/for_the_app/composTc_model_8elem_2.pkl",'rb') as f:
+        #     self.model = dill.load(f)
         self.elem_df = pd.read_csv("elem_df.csv")
         self.elems = self.elem_df["Symbol"].tolist()[::-1]
         self.elems_x = [el+"_x" for el in self.elems]
@@ -36,12 +42,10 @@ class composition_8elem:
         self.compos = []
         self.maxTc = 0
         self.pfig = figure(width=1200, height=540, x_range=(0, 150))
-
-
+        return self
+        
     def my_colors(self,ii,nn):
         return HSL(360*(ii+1)/nn,1,0.4).to_rgb().to_hex()
-
-
 
     def update_plot(self,dict_new):
         
@@ -163,5 +167,4 @@ class composition_8elem:
 
     def old_plot(self):
         return self.plot_script,self.plot_div,self.elem_prop,self.maxTc,self.compos
-
 
