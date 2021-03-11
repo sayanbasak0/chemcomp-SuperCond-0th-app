@@ -16,11 +16,10 @@ import joblib
 #### After manually composing compound Get critical temperature.
 
 class temperature_8elem(constituent_transformer):
-    def __init__(self):
-        pass
-    def load_model(self):
+    def __init__(self, model):
         # load model and define global as class variables
-        
+        self.model = model
+        # self.model = joblib.load("Tc_model_8elem.pkl")
         self.elem_df = pd.read_csv("elem_df.csv")
         self.elems = self.elem_df["Symbol"].tolist()[::-1]
         self.elems_x = [el+"_x" for el in self.elems]
@@ -33,11 +32,9 @@ class temperature_8elem(constituent_transformer):
         self.Comp = []
         self.vcTc = 0
         self.Tc = 0
-        return self
         
     def geTc(self,dict_new):
-        self.model = joblib.load("Tc_model_8elem.pkl")
-
+        
         test_X = pd.DataFrame(columns=self.elems_x)
         
         col_prop = list(filter(lambda x: dict_new[x[:-2]]>0, self.elems_x))
