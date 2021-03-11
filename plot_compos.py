@@ -8,61 +8,38 @@ warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 import numpy as np
 import pandas as pd
-import time
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import seaborn as sb
-import random
-
-import matplotlib as mpl
-mpl.rcParams['figure.facecolor'] = '#222222'
-mpl.rcParams['axes.facecolor'] = '#222222'
-mpl.rcParams['axes.labelcolor'] = '#edece9'
-mpl.rcParams['xtick.color'] = '#edece9'
-mpl.rcParams['ytick.color'] = '#edece9'
-mpl.rcParams['text.color'] = '#edece9' 
 
 ### Load trained Random Forest Regressor model
 import zipfile
 import os
-import pickle
+import joblib
 
 def load_model(offline_debug):
-    global model
-    filebase = "rf_regressor"
+    global model,elems_x,elems_b,elems
     if offline_debug:
-        with open("../../sc_data_inc/"+filebase+".dat", 'rb') as f:
-            model = pickle.load(f)
+        model = joblib.load("../../sc_data_inc/for_the_app/composTc_model_8elem.pkl")
     else:
-        with zipfile.ZipFile(filebase+".zip") as zipref:
-            zipref.extractall()
+        with zipfile.ZipFile("model_8elem.zip") as zipref:
+            zipref.extract("composTc_model_8elem.pkl")
+        model = joblib.load("composTc_model_8elem.pkl")
+        os.remove("composTc_model_8elem.pkl")
 
-        with open(filebase+".dat", 'rb') as f:
-            model = pickle.load(f)
+    elem_df = pd.read_csv("elem_df.csv")
+    elems = elem_df["Symbol"].tolist()[::-1]
+    elems_x = [el+"_x" for el in elems]
+    elems_b = [el+"_b" for el in elems]
+    # elems_atomic = {el[0]:el[1] for el in zip(elems,elem_df["Atomic number"].tolist()[::-1])}
+    # elems_mass = {el[0]:el[1] for el in zip(elems,elem_df["Atomic weight (u)"].tolist()[::-1])}
+    # elems_group = {el[0]:el[1] for el in zip(elems,elem_df["Group"].tolist()[::-1])}
+    # elems_period = {el[0]:el[1] for el in zip(elems,elem_df["Period"].tolist()[::-1])}
 
-        os.remove(filebase+".dat")
-
-### Initialize input features 
-
-data_head = pd.read_csv("SC_data_frac.csv",nrows=0) 
-data_Tc = pd.read_csv("SC_data_frac.csv",usecols=["Critical Temperature"]) 
-
-col_bool = [col[:-2]+"_bool" for col in data_head if col.endswith("_x")]
-
-data_headr = ["Scaled T_c"]
-data_headr.extend(col_bool)
-
-data_Tc = data_Tc[data_Tc["Critical Temperature"]>0]
-data_std = data_Tc.std()
 
 #### After manually selecting elements update plot.
-from bokeh.plotting import figure,show
+from bokeh.plotting import figure
 from bokeh.embed import file_html,components
-from bokeh.util.compiler import TypeScript
-from bokeh.palettes import Turbo256
 from bokeh.models import Label,Legend,HoverTool,ColumnDataSource
 from bokeh.colors import HSL
-from collections import defaultdict
+
 def my_colors(ii,nn):
     return HSL(360*(ii+1)/nn,1,0.4).to_rgb().to_hex()
 
@@ -71,25 +48,23 @@ plot_script = ""
 elem_prop = {}
 compos = []
 maxTc = 0
-pfig = figure(width=1200, height=540, x_range=(0, 100))
+pfig = figure(width=1200, height=540, x_range=(0, 150))
 def update_plot(dict_new):
-    global plot_div,plot_script,pfig,elem_prop,maxTc,compos
-    pfig = figure(width=1200, height=540, x_range=(0, 100))
+    global plot_div,plot_script,pfig,elem_prop,maxTc,compos,elems_x,elems_b,elems
+    pfig = figure(width=1200, height=540, x_range=(0, 150))
     
-    t_lim = [0,150]
+    t_lim = [0,200]
     
-    test_X = pd.DataFrame(columns=["Scaled T_c","dict_elem"])
-    UnScaled_T_c = np.linspace(t_lim[0],t_lim[1],151)
-    test_X["Scaled T_c"] = UnScaled_T_c/data_std["Critical Temperature"]
-    col_out = list(map(lambda x: x[:-5], col_bool))
-    dict_new_ = dict(map(lambda x: (x[0]+"_bool", x[1]), dict_new.items()))
-    test_X.loc[:,"dict_elem"] = [dict_new_]*len(test_X)
-    test_X = pd.concat([test_X.drop(["dict_elem"],axis=1),test_X["dict_elem"].apply(pd.Series)],axis=1)
+    test_X = pd.DataFrame(columns=elems_b+["Critical Temperature"])
+    UnScaled_T_c = np.linspace(t_lim[0],t_lim[1],201)
+    test_X["Critical Temperature"] = UnScaled_T_c
+    col_bool = list(filter(lambda x: dict_new[x[:-2]]>0, elems_b))
+    col_vool = list(map(lambda x: dict_new[x[:-2]], col_bool))
+    test_X.loc[:, col_bool] = col_vool
+    col_out = list(filter(lambda x: dict_new[x]>0, elems))
     
-    
-    Y_pred = model.predict(test_X[data_headr])
-    pred_df = pd.DataFrame(Y_pred,columns=col_out)
-    # print(col_out,col_bool)
+    Y_pred = model.predict(test_X.loc[:,elems_b+["Critical Temperature"]])
+    pred_df = pd.DataFrame(Y_pred[:,:len(col_out)],columns=col_out)
     line_types = ["dashed","solid"]
     elem_present = pred_df.loc[:,((pred_df[col_out]*test_X[col_bool].values).sum(axis=0)>0)].columns
     elem_present = list(zip(elem_present, 

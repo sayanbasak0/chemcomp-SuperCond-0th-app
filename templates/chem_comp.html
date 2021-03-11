@@ -91,24 +91,24 @@
             <h3> Machine Learning model: </h3>
             <p> Random Forest Regressor </p>
             <h3> Input Features: </h3>
-            <p> Multi one-hot encoded Elements present in the chemical formula + Critical Temperature. </p>
+            <p> Multiple elements upto <b>8</b> present in the chemical formula + Critical Temperature. </p>
             <h3> Output: </h3>
             <p> Chemical Composition with relative proportion of elements. </p>
             <h3> How the optimal composition is determined? </h3>
             <p>
-                The ML-model produces a chemical composition for each critical temperature in the 0-200 K range.
+                The ML-model produces a chemical composition for each critical temperature in the 0&#151;200 K range.
                 <br>
                 The maximum critical temperature is determined from the output composition becoming constant in the range T<sub>c</sub>&#151;200 K.
                 <br>
                 The optimal composition is the output at Max T<sub>c</sub> found.
             </p>
-            <h3> What are the colors on the right (bottom) of element-buttons in (Long) Periodic table. </h3>
+            <h3> What are the colors on the right (bottom) of element-buttons in (Long) Periodic table? </h3>
             <p>
                 <ul>
                     <li> <div style="display:inline; color:rgb(0, 0, 0); font-weight: bold;"> Black: </div> Element not selected. </li>
-                    <li> <div style="display:inline; color:rgb(200, 0, 0); font-weight: bold;"> Red: </div> Element not selected and the relative amount in the composition. </li>
                     <li> <div style="display:inline; color:rgb(200, 100, 0); font-weight: bold;"> Orange: </div> Element selected. </li>
                     <li> <div style="display:inline; color:rgb(0, 200, 0); font-weight: bold;"> Green: </div> Element selected and the relative amount in the composition. </li>
+                    <li> <div style="display:inline; color:rgb(200, 0, 0); font-weight: bold;"> Red: </div> Element not selected and the relative amount in the composition. </li>
                 </ul>
             </p>
         </div>
@@ -121,7 +121,14 @@
                     {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
                 {% endfor %}
             </h2>
-            <h3>The Chemical Composition of superconductor predicted by the Random-Forest model for a maximum T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
+            <h3>This is the predicted Chemical Composition of superconductor with a maximum T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
+            <form action="/crit_temp" method="POST">
+                <div class="hidden-formula">
+                    <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
+                        value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
+                </div>
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="Critical Temperature redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Get Critical Temperature of the optimal composition</button>
+            </form>
             <p >
                 {{ plot_div | safe }}
             
@@ -169,16 +176,21 @@
         <div class="form-1">
             <form id="form1" action="{{custom_link}}chem_comp" method="POST">
                 <p>
-                    <p>
+                    <!-- <p>
                         <button type="button" class="select-elems" value="1" name="Select All" onclick="select_all()">Select All</button>
                         <button type="button" class="select-elems" value="1" name="UnSelect All" onclick="unselect_all()">UnSelect All</button>
                         <button type="button" class="select-elems" value="1" name="Invert Selection" onclick="invert_selection()">Invert Selection</button>
+                    </p> -->
+                    <p>
+                        <b>n = </b>
+                        <input id="n-number" class="n-number" type="number" value="{{no_of_elems}}" min="2" max="8" step="1" name="number of elems again" onchange="sync_number_with_slider('n-number','n-slider')"/>
+                        <input id="n-slider" class="n-slider" type="range" value="{{no_of_elems}}" min="2" max="8" step="1" name="number of elems" onchange="sync_number_with_slider('n-slider','n-number')"/>
                     </p>
                     <p>
-                        <input id="n-slider" class="n-slider" type="range" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems" onchange="randomly_select('n-slider')"/>
-                        <input id="n-number" class="n-number" type="number" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems again" onchange="randomly_select('n-number')"/>
-                        <button type="button" class="n-button" onclick="randomly_select('n-number')">Element(s) [Select Randomly]</button>
+                        <button type="button" id="random_n" class="select-elems-two" onclick="randomly_select('n-number')">Randomly Select n={{no_of_elems}} Element(s)</button>
+                        <button type="button" id="reset_n" class="select-elems-two" onclick="reset_to_last()">Reset Selection</button>
                     </p>
+                    
                     <p>
                         <!-- <input id="type-elements" class="type-elements element-list" type="text" placeholder="Selected Elements..." name="Selected Elements" onchange="sync_with_tabs()" >
                         </input> -->
@@ -190,7 +202,7 @@
                     </p>
                 </p>
                 <p>
-                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Chemical Composition for Maximum Critical Temperature</button>
+                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Chemical Composition which Maximizes Critical Temperature [2-8 Element(s)]</button>
                 </p>
             </form>
         </div>
@@ -205,14 +217,17 @@
             });
             
             function sync_with_tabs() {
-                elms = document.getElementById("type-elements").value;
-                elmsi = elms.split(/[\s,.;:\\\/|+\-\&_\n\r]+/);
-                uchkontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var elms = document.getElementById("type-elements").value;
+                var elmsi = elms.split(/[\s,.;:\\\/|+\-\&_\n\r]+/);
+                var uchkontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
                 for(i=0; i<uchkontent.length; i++) {
                     uchkontent[i].checked = false;
                 }
                 for (i=0; i<elmsi.length; i++) {
-                    buts = document.getElementsByClassName("dis-"+elmsi[i])
+                    var buts = document.getElementsByClassName("dis-"+elmsi[i])
+                    if (elmsi[i]=="An" || elmsi[i]=="Ln" || elmsi[i]=="arrow" || elmsi[i]=="space"){
+                        buts = []
+                    }
                     for (j=0; j<buts.length; j++) {
                         buts[j].checked = true;
                     }
@@ -229,16 +244,20 @@
                     }
                 }
                 document.getElementById("type-elements").value = elmsi.join(",");
+                if (elmsi.length<2 || elmsi.length>8) {
+                    document.getElementById("update-plot").disabled = true;
+                } else {
+                    document.getElementById("update-plot").disabled = false;
+                }
             }
             function sync_tabs(elm) {
-                elms = document.getElementById("type-elements").value;
-                if (elms.length==0){
-                    elmsi = [];
-                } else {
+                var elms = document.getElementById("type-elements").value;
+                elmsi = [];
+                if (elms.length>0){
                     elmsi = elms.split(/[\s,.;:\\\/|+\-\&_\n\r]+/);
                 }
                 var deleteind = elmsi.indexOf(elm);
-                uchkontent = document.getElementsByClassName("dis-"+elm);
+                var uchkontent = document.getElementsByClassName("dis-"+elm);
                 if (deleteind>=0) {
                     elmsi.splice(deleteind,1);
                     for (i=0; i<uchkontent.length; i++) {
@@ -251,14 +270,21 @@
                     }
                 }
                 document.getElementById("type-elements").value = elmsi.join(",");
+                sync_with_tabs();
             }
+            function sync_number_with_slider(butid1,butid2) {
+                document.getElementById(butid2).value = document.getElementById(butid1).value ;
+                var nelms = document.getElementById("n-number").value;
+                document.getElementById("random_n").innerHTML = 'Randomly Select n='+nelms+' Element(s)';
+            }
+            
             function invert_selection() {
-                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
                 for (i=0; i<chkcontent.length; i++){
                     chkcontent[i].checked = !(chkcontent[i].checked);
                 }
-                selectell = document.querySelector('.shell');
-                uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var selectell = document.querySelector('.shell');
+                var uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
                 var elmsi = [];
                 for (i=0; i<uchkcontent.length; i++) {
                     if (uchkcontent[i].checked==true) {
@@ -268,24 +294,22 @@
                 document.getElementById("type-elements").value = elmsi.join(",");
             }
             function select_all() {
-                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
-                for (i=0; i<chkcontent.length; i++){
-                    chkcontent[i].checked = true;
-                }
-                selectell = document.querySelector('.shell');
-                uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var selectell = document.querySelector('.shell');
+                var uchkcontent = selectell.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
                 var elmsi = [];
                 for (i=0; i<uchkcontent.length; i++) {
                     elmsi.push(uchkcontent[i].name);
                 }
                 document.getElementById("type-elements").value = elmsi.join(",");
+                sync_with_tabs();
             }
             function unselect_all() {
-                chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
+                var chkcontent = document.querySelectorAll("input:not(.dis-Ln,.dis-An,.dis-arrow,.dis-space),.chk-0,.chk-1");
                 for (i=0; i<chkcontent.length; i++){
                     chkcontent[i].checked = false;
                 }
                 document.getElementById("type-elements").value = "";
+                sync_with_tabs();
             }
             function randomly_select(butid) {
                 var bucket = [];
@@ -299,11 +323,11 @@
                     bucket.push(i);
                 }
                 var els = document.getElementById(butid).value;
-                if (els>120){
-                    els=120;
+                if (els>8){
+                    els=8;
                 } else {
-                    if (els<0) {
-                        els = 0;
+                    if (els<2) {
+                        els = 2;
                     }
                 }
                 var elmsi = [];
@@ -318,6 +342,19 @@
                 document.getElementById("type-elements").value = elmsi.join(",");
                 document.getElementById("n-slider").value = els;
                 document.getElementById("n-number").value = els;
+                sync_with_tabs();
+            }
+            function reset_to_last(){
+                unselect_all();
+                var elmsi = [];
+                var shellong = document.querySelector(".shellong");
+                var chkcontent = shellong.getElementsByClassName("chk-1");
+                var i;
+                for (i=0; i<chkcontent.length; i++){
+                    elmsi.push(chkcontent[i].name);
+                }
+                document.getElementById("type-elements").value = elmsi.join(",")
+                sync_with_tabs();
             }
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;

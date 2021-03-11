@@ -91,10 +91,47 @@
             <h3> Machine Learning model: </h3>
             <p> Random Forest Regressor </p>
             <h3> Input Features: </h3>
-            <p> Elements relative proportion present in the chemical formula. </p>
+            <p> Single or multiple Element(s) upto <b>8</b> with relative proportion (normalized to 1) present in the chemical formula. </p>
             <h3> Output: </h3>
             <p> Critical Temperature. </p>
-            
+            <h3> How nearby compositions are explored?</h3>
+            <p>
+                Let <i>x<sub>i</sub></i> be the relative proportion of <i>i<sup>th</sup></i> elements,
+                <br>
+                Then all possible combinations with:
+                <br>
+                <i>x<sub>i</sub></i>, <i>x<sub>i</sub></i>-<i>x<sub>i</sub> /10</i>, <i>x<sub>i</sub></i>+<i>(1-x<sub>i</sub>) /10</i> .
+                <br>
+                are explored and the maximum is reported.
+                <br>
+                The resulting proportions are normalized to 1 as well.
+            </p>
+        </div>
+        <div id="Prediction-Tab" class="tabcontent">
+            <div class="w3-center w3-display-top">
+                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Prediction</span>
+            </div>
+            <h2>
+                T<sub>c</sub> = {{"%.1f"|format(Tc)}} K = {{"%.1f"|format(Tc-273.15)}}<sup>o</sup>C = {{"%.1f"|format((Tc-273.15)*9/5+32)}}<sup>o</sup>F
+            </h2>
+            <h3>This is the predicted superconducting Critical Temperature for the Chemical Composition:
+                <br>
+                {% for symb_x in comp_list %}
+                    {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
+                {% endfor %}
+            </h3>
+            <hr style="width:100%;text-align:left;margin-left:0">
+            <h2> Checking compositions deviating slightly from the current:
+            </h2>
+            <h3>
+                {% for symb_x in altcomp_list %}
+                {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
+                {% endfor %}
+                <br>
+                The predicted superconducting Critical Temperature for this Chemical Composition is:
+                T<sub>c</sub> = {{"%.1f"|format(altTc)}} K = {{"%.1f"|format(altTc-273.15)}}<sup>o</sup>C = {{"%.1f"|format((altTc-273.15)*9/5+32)}}<sup>o</sup>F
+            </h3>
+            <hr style="width:100%;text-align:left;margin-left:0">
         </div>
         <div id="Periodic-Tab" class="tabcontent">
             <div class="w3-center w3-display-top">
@@ -109,7 +146,7 @@
                                                                                     rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) 100% )">
                     
                     <div class="hidden-range dis-{{elem}}">
-                        <input id="range-{{elem}}-s" class="dis-{{elem}} chk-{{selems[elem]}} hidden-range-s range-{{elem}}" type="range" value="{{pelems[elem]/100}}" min=0 max=1 step=0.01 onchange="sync_tabs('range','{{elem}}','s', 0)" tabindex="0">
+                        <input id="range-{{elem}}-s" class="hidden-range-s range-{{elem}}" type="range" value="{{pelems[elem]/100}}" min=0 max=1 step=0.01 onchange="sync_tabs('range','{{elem}}','s', 0)" tabindex="0">
                     </div>
                     <table>
                         <tr>
@@ -163,30 +200,13 @@
                 {% endfor %}
             </div>
         </div>
-        <div id="Prediction-Tab" class="tabcontent">
-            <div class="w3-center w3-display-top">
-                <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Prediction</span>
-            </div>
-            <h2>
-                {% for symb_x in comp_list %}
-                    {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
-                {% endfor %}
-            </h2>
-            <h3>The superconducting Critical Temperature for the above Chemical Composition predicted by the Random-Forest model is:
-                T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
-            <p >
-                {{ plot_div | safe }}
-            
-                {{ plot_script | safe }}
-            </p>
-        </div>
         <div class="form-1">
             <form id="form1" action="{{custom_link}}crit_temp" method="POST">
                 <p>
                     <p>
                         <b>n = </b>
-                        <input id="n-number-1" class="n-number" type="number" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems again" onchange="sync_number_with_slider('n-number-1','n-slider-1')"/>
-                        <input id="n-slider-1" class="n-slider" type="range" value="{{no_of_elems}}" min="0" max="120" step="1" name="number of elems" onchange="sync_number_with_slider('n-slider-1','n-number-1')"/>
+                        <input id="n-number-1" class="n-number" type="number" value="{{no_of_elems}}" min="1" max="8" step="1" name="number of elems again" onchange="sync_number_with_slider('n-number-1','n-slider-1')"/>
+                        <input id="n-slider-1" class="n-slider" type="range" value="{{no_of_elems}}" min="1" max="8" step="1" name="number of elems" onchange="sync_number_with_slider('n-slider-1','n-number-1')"/>
                     </p>
                     <p>
                         <b>p = </b>
@@ -198,14 +218,14 @@
                         <button id="reset_x_and_p" type="button" class="select-elems-two" onclick="reset_to_last()">Reset Chemical Formula</button>
                     </p>
                     <p>
-                        <button id="equal_p_invert" type="button" class="select-elems" onclick="invert_selection()">Invert Selection with p={{prop_of_elems}}</button>
+                        <!-- <button id="equal_p_invert" type="button" class="select-elems" onclick="invert_selection()">Invert Selection with p={{prop_of_elems}}</button> -->
                         <button id="equal_p_nonzero" type="button" class="select-elems" onclick="assign_prop('non-zero','equal')">Equalize non-zero Proportions to p={{prop_of_elems}}</button>
-                        <button id="equal_p_zero" type="button" class="select-elems" onclick="assign_prop('zero','equal')">Assign p={{prop_of_elems}} to zero Proportion</button>
-                    </p>
-                    <p>
-                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','comp')">Take complement of non-zero Proportion</button>
+                        <!-- <button id="equal_p_zero" type="button" class="select-elems" onclick="assign_prop('zero','equal')">Assign p={{prop_of_elems}} to zero Proportion</button> -->
+                    <!-- </p> -->
+                    <!-- <p> -->
+                        <button type="button" class="select-elems" onclick="assign_prop('non-zero','comp')">Take complement of non-zero Proportions</button>
                         <button type="button" class="select-elems" onclick="assign_prop('non-zero','random')">Randomize non-zero Proportions</button>
-                        <button type="button" class="select-elems" onclick="assign_prop('zero','random')">Assign random to zero Proportion </button>
+                        <!-- <button type="button" class="select-elems" onclick="assign_prop('zero','random')">Assign random to zero Proportion </button> -->
                     </p>
                     <p>
                         <!-- <input id="type-elements" class="type-elements element-list" type="text" placeholder="Selected Elements..." name="Selected Elements" onchange="sync_with_tabs()" >
@@ -231,7 +251,7 @@
                     </p>
                 </p>
                 <p>
-                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Critical Temperature for this Chemical Composition</button>
+                    <button type="submit" id="update-plot" class="update-plot" value="{{defaultab}}" name="Update Plot">Find the Critical Temperature for this Chemical Composition [1-8 element(s)]</button>
                 </p>
             </form>
         </div>
@@ -333,7 +353,7 @@
                 document.getElementById("type-elements").value = "";
                 document.getElementById("formula-out").value = formula_out.join(",");
                 document.getElementById("formula").innerHTML = formula;
-                if (document.getElementById("formula-out").value == "") {
+                if (formula_out.length<1 || formula_out.length>8) {
                     document.getElementById("update-plot").disabled = true;
                 } else {
                     document.getElementById("update-plot").disabled = false;
@@ -367,9 +387,7 @@
                 var nelms = document.getElementById("n-number-1").value;
                 var pelms = document.getElementById("n-number-2").value;
                 document.getElementById("random_x_equal_p").innerHTML = 'Randomly Select n='+nelms+' Element(s) with p='+pelms;
-                document.getElementById("equal_p_invert").innerHTML = 'Invert Selection and assign p='+pelms;
                 document.getElementById("equal_p_nonzero").innerHTML = 'Equalize non-zero Proportions to p='+pelms;
-                document.getElementById("equal_p_zero").innerHTML = 'Assign p='+pelms+' to zero Proportion';
             }
             function reset_to_last(){
                 document.getElementById("type-elements").value = document.getElementById("formula-last").value;
@@ -452,11 +470,11 @@
                 // console.log(chkcontent.length);
                 
                 var nelms = document.getElementById("n-number-1").value;
-                if (nelms>120){
-                    nelms=120;
+                if (nelms>8){
+                    nelms=8;
                 } else {
-                    if (nelms<0) {
-                        nelms = 0;
+                    if (nelms<1) {
+                        nelms = 1;
                     }
                 }
                 var pelms = document.getElementById("n-number-2").value;
