@@ -40,22 +40,22 @@ def index():
 
 @app.route('/crit_temp',methods = ['POST', 'GET'])
 def crit_temp():
-    p_table = elements.list_1
-    pong_table = elements.list_2
+    p_table = parse_elements.list_1
+    pong_table = parse_elements.list_2
     print(request.method)
     print(request.form.get('redirect'))
     print(request.form.get('Critical Temperature redirect'))
     if request.method == 'POST':
-        selems,defaultab,no_of_elems,prop_of_elems = elements.update_composition(request.form)
+        selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
         if request.form.get("Update Plot"):
             defaultab = "Prediction-Tab"
-            Tc,comp_list,altTc,altcomp_list = get_Tc.geTc(selems)
+            Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
         elif request.form.get("Critical Temperature redirect"):
             defaultab = "Prediction-Tab"
-            Tc,comp_list,altTc,altcomp_list = get_Tc.geTc(selems)
+            Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
         else:
             defaultab = "Method-Tab"
-            Tc,comp_list,altTc,altcomp_list = get_Tc.preTc()
+            Tc,comp_list,altTc,altcomp_list = get_Temperature.preTc()
         return render_template('crit_temp.html', 
                                 p_table=p_table, 
                                 pong_table=pong_table, 
@@ -72,8 +72,8 @@ def crit_temp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems,defaultab,no_of_elems,prop_of_elems = elements.update_composition(request.form)
-        Tc,comp_list,altTc,altcomp_list = get_Tc.geTc(selems)
+        selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
+        Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
         return render_template('crit_temp.html', 
                                 p_table=p_table, 
                                 pong_table=pong_table, 
@@ -91,18 +91,18 @@ def crit_temp():
 
 @app.route('/chem_comp',methods = ['POST', 'GET'])
 def chem_comp():
-    p_table = elements.list_1
-    pong_table = elements.list_2
+    p_table = parse_elements.list_1
+    pong_table = parse_elements.list_2
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
-        selems,defaultab,no_of_elems = elements.update_elements(request.form)
+        selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
         if request.form.get("Update Plot"):
             defaultab = "Prediction-Tab"
-            plot_script,plot_div,pelems,maxTc,comp_list = plot_compos.update_plot(selems)
+            plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.update_plot(selems)
         else:
             defaultab = "Method-Tab"
-            plot_script,plot_div,pelems,maxTc,comp_list = plot_compos.old_plot()
+            plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.old_plot()
         return render_template('chem_comp.html', 
                                 p_table=p_table, 
                                 pong_table=pong_table, 
@@ -118,8 +118,8 @@ def chem_comp():
                                 custom_link=mylink)
 
     elif request.method == 'GET':
-        selems,defaultab,no_of_elems = elements.update_elements(request.form)
-        plot_script,plot_div,pelems,maxTc,comp_list = plot_compos.update_plot(selems)
+        selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
+        plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.update_plot(selems)
         return render_template('chem_comp.html', 
                                 p_table=p_table, 
                                 pong_table=pong_table, 
@@ -139,15 +139,18 @@ if __name__== '__main__':
     if len(sys.argv)>1:
         if sys.argv[1]=='local':
             OFFLINE_DEBUG = True
-            plot_compos.load_model(OFFLINE_DEBUG)
-            get_Tc.load_model(OFFLINE_DEBUG)
+            plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
+            get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
+            parse_elements = elements.elements_parser()
             app.run(port=8000, debug=True)
         else:
-            plot_compos.load_model(OFFLINE_DEBUG)
-            get_Tc.load_model(OFFLINE_DEBUG)
+            plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
+            get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
+            parse_elements = elements.elements_parser()
             app.run(port=8000, debug=True)
     else:
-        plot_compos.load_model(OFFLINE_DEBUG)
-        get_Tc.load_model(OFFLINE_DEBUG)
+        plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
+        get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
+        parse_elements = elements.elements_parser()
         app.run(port=33507)
 
