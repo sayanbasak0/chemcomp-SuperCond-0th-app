@@ -10,8 +10,6 @@ import numpy as np
 import pandas as pd
 
 ### Load trained Random Forest Regressor model
-import zipfile
-import os
 import joblib
 
 #### After manually selecting elements update plot.
@@ -20,19 +18,10 @@ from bokeh.embed import file_html,components
 from bokeh.models import Label,Legend,HoverTool,ColumnDataSource
 from bokeh.colors import HSL
 
-
-
 class composition_8elem:
-    def __init__(self,offline_debug):
+    def __init__(self):
         # load model and define global as class variables
-        if offline_debug:
-            self.model = joblib.load("../../sc_data_inc/for_the_app/composTc_model_8elem.pkl")
-        else:
-            with zipfile.ZipFile("model_8elem.zip") as zipref:
-                zipref.extract("composTc_model_8elem.pkl")
-            self.model = joblib.load("composTc_model_8elem.pkl")
-            os.remove("composTc_model_8elem.pkl")
-
+        self.model = joblib.load("composTc_model_8elem.pkl")
         self.elem_df = pd.read_csv("elem_df.csv")
         self.elems = self.elem_df["Symbol"].tolist()[::-1]
         self.elems_x = [el+"_x" for el in self.elems]
