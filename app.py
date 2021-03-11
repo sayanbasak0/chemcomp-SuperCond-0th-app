@@ -164,7 +164,8 @@ if __name__== '__main__':
         RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
     print(f"Session: {RANDOM_SESS_KEY}")
     parse_elements = elements.elements_parser(make_file=True, random_session=RANDOM_SESS_KEY)
-
+    plot_Composition = plot_compos.composition_8elem()
+    get_Temperature = get_Tc.temperature_8elem()
     # app.run(port=8000, debug=True)
     app.run(port=33507)
 
