@@ -21,6 +21,9 @@
                 background-image: url("/static/supercover.jpg");
                 min-height: 100%;
             }
+            #standalone_button {
+                border: 2px solid black !important;
+            }
         </style>
     </head>
     
@@ -121,13 +124,15 @@
                     {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
                 {% endfor %}
             </h2>
-            <h3>This is the predicted Chemical Composition of superconductor with a maximum T<sub>c</sub> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
+            <h3>This is the predicted Chemical Composition of superconductor with a maximum Critical Temperature of:
+                <br>
+                T<sub>c</sub><sup>max</sup> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
             <form action="/crit_temp" method="POST">
                 <div class="hidden-formula">
                     <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
                         value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
                 </div>
-                <button type="submit" class="w3-bar-item w3-button w3-large" name="Critical Temperature redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Get Critical Temperature of the optimal composition</button>
+                <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="Critical Temperature redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Get Critical Temperature of the optimal composition</button>
             </form>
             <p >
                 {{ plot_div | safe }}

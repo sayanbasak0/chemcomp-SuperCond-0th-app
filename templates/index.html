@@ -20,6 +20,9 @@
                 min-height: 100%;
                 color:#000;
             }
+            #standalone_button {
+                border: 1px solid black !important;
+            }
         </style>
     </head>
     
@@ -91,26 +94,26 @@
                     How to use this site?
                 </h3>
                 <form action="/" method="POST">
-                    
                     <ul>
                         <li> 
                             <h4>Given a set of Elements:</h4> 
                             Select the elements in the 
-                            <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
+                            <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
                             page.
                             Get the optimal composition which maximizes Critical Temperature.
                             <br>
                             Bonus: Cross check the Max(T<sub>c</sub>) of this composition from 
-                            <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                            <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                            page.
                         </li>
                         <li>
                             <h4>If you know the Composition:</h4> 
                             Select the relative proportion of elements in the 
-                            <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                            <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
                             page.
                             Get the Critical Temperature.
                             <br>
-                            Bonus: Also checks for ear by compositions for a larger Critical Temperature.
+                            Bonus: Also checks for nearby compositions for a larger Critical Temperature.
                         </li>
                     </ul>
                 </form>
