@@ -6,9 +6,9 @@ from bokeh.embed import file_html,components
 from bokeh.resources import CDN
 import sys
 import elements
-import plot_compos
-import get_Tc
 from const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
+from plot_compos import composition_8elem
+from get_Tc import temperature_8elem
 
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
@@ -38,7 +38,7 @@ def index():
 
 @app.route('/crit_temp',methods = ['POST', 'GET'])
 def crit_temp():
-    get_Temperature = get_Tc.temperature_8elem()
+    get_Temperature = temperature_8elem().load_model()
     parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
     print(request.form.get('redirect'))
@@ -89,7 +89,7 @@ def crit_temp():
 
 @app.route('/chem_comp',methods = ['POST', 'GET'])
 def chem_comp():
-    plot_Composition = plot_compos.composition_8elem()
+    plot_Composition = composition_8elem().load_model()
     parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
     print(request.form.get('redirect'))
@@ -164,8 +164,9 @@ if __name__== '__main__':
         RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
     print(f"Session: {RANDOM_SESS_KEY}")
     parse_elements = elements.elements_parser(make_file=True, random_session=RANDOM_SESS_KEY)
-    plot_Composition = plot_compos.composition_8elem()
-    get_Temperature = get_Tc.temperature_8elem()
+    # plot_Composition = plot_compos.composition_8elem()
+    # get_Temperature = get_Tc.temperature_8elem()
+
     # app.run(port=8000, debug=True)
     app.run(port=33507)
 
