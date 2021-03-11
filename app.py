@@ -15,8 +15,8 @@ from get_Tc import temperature_8elem
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
 RANDOM_SESS_KEY = f"{np.random.randint(0,999999):08d}"
-modelTc = joblib.load("Tc_model_8elem.pkl")
-modelCompos = joblib.load("composTc_model_8elem.pkl")
+# modelTc = joblib.load("Tc_model_8elem.pkl")
+# modelCompos = joblib.load("composTc_model_8elem.pkl")
 
 app = Flask(__name__, static_url_path='/static' )
 
@@ -42,7 +42,7 @@ def index():
 
 @app.route('/crit_temp',methods = ['POST', 'GET'])
 def crit_temp():
-    # modelTc = joblib.load("Tc_model_8elem.pkl")
+    modelTc = joblib.load("Tc_model_8elem.pkl")
     get_Temperature = temperature_8elem(modelTc)
     parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
@@ -94,7 +94,7 @@ def crit_temp():
 
 @app.route('/chem_comp',methods = ['POST', 'GET'])
 def chem_comp():
-    # modelCompos = joblib.load("composTc_model_8elem.pkl")
+    modelCompos = joblib.load("composTc_model_8elem.pkl")
     plot_Composition = composition_8elem(modelCompos)
     parse_elements = elements.elements_parser(random_session=RANDOM_SESS_KEY)
     print(request.method)
