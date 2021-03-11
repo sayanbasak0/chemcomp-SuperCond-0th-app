@@ -7,6 +7,7 @@ class elements_parser:
         if (make_file):
             with open(f'elements_sess1.pkl', 'rb') as f:
                 sess_dict1 = pickle.load(f)
+                self.list_2 = sess_dict1["list_2"]
                 self.list_1 = sess_dict1["list_1"]
                 self.dict_1 = sess_dict1["dict_1"]
                 self.defaultab1 = sess_dict1["defaultab1"]
@@ -14,6 +15,7 @@ class elements_parser:
                 self.selected_elems1 = sess_dict1["selected_elems1"]
             with open(f'elements_sess2.pkl', 'rb') as f:
                 sess_dict2 = pickle.load(f)
+                self.list_1 = sess_dict2["list_1"]
                 self.list_2 = sess_dict2["list_2"]
                 self.dict_2 = sess_dict2["dict_2"]
                 self.defaultab2 = sess_dict2["defaultab2"]
@@ -53,6 +55,7 @@ class elements_parser:
         else:
             with open(f'elements_sess1_{self.random_session}.pkl', 'rb') as f:
                 sess_dict1 = pickle.load(f)
+                self.list_2 = sess_dict1["list_2"]
                 self.list_1 = sess_dict1["list_1"]
                 self.dict_1 = sess_dict1["dict_1"]
                 self.defaultab1 = sess_dict1["defaultab1"]
@@ -60,6 +63,7 @@ class elements_parser:
                 self.selected_elems1 = sess_dict1["selected_elems1"]
             with open(f'elements_sess2_{self.random_session}.pkl', 'rb') as f:
                 sess_dict2 = pickle.load(f)
+                self.list_1 = sess_dict2["list_1"]
                 self.list_2 = sess_dict2["list_2"]
                 self.dict_2 = sess_dict2["dict_2"]
                 self.defaultab2 = sess_dict2["defaultab2"]
@@ -70,6 +74,7 @@ class elements_parser:
     def __del__(self):
         with open(f'elements_sess1_{self.random_session}.pkl', 'wb') as f:
             sess_dict1 = {}
+            sess_dict1["list_2"] = self.list_2
             sess_dict1["list_1"] = self.list_1
             sess_dict1["dict_1"] = self.dict_1
             sess_dict1["defaultab1"] = self.defaultab1
@@ -79,6 +84,7 @@ class elements_parser:
         
         with open(f'elements_sess2_{self.random_session}.pkl', 'wb') as f:
             sess_dict2 = {}
+            sess_dict2["list_1"] = self.list_1
             sess_dict2["list_2"] = self.list_2
             sess_dict2["dict_2"] = self.dict_2
             sess_dict2["defaultab2"] = self.defaultab2

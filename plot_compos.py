@@ -10,8 +10,7 @@ from sklearn.metrics import mean_absolute_error
 import numpy as np
 import pandas as pd
 
-### Load trained Random Forest Regressor model
-import joblib
+
 
 #### After manually selecting elements update plot.
 from bokeh.plotting import figure
