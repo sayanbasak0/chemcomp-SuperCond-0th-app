@@ -137,6 +137,6 @@ def chem_comp():
     
 
 if __name__== '__main__':
-    app.run(port=8000, debug=True)
-    # app.run(port=33507)
+    # app.run(port=8000, debug=True)
+    app.run(port=33507)
 
