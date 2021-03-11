@@ -11,22 +11,14 @@ import pandas as pd
 
 
 ### Load trained Random Forest Regressor model
-import zipfile
-import os
 import joblib
 
 #### After manually composing compound Get critical temperature.
 
-
 class temperature_8elem:
-    def __init__(self,offline_debug):
-        if offline_debug:
-            self.model = joblib.load("../../sc_data_inc/for_the_app/Tc_model_8elem.pkl")
-        else:
-            with zipfile.ZipFile("model_8elem.zip") as zipref:
-                zipref.extract("Tc_model_8elem.pkl")
-            self.model = joblib.load("Tc_model_8elem.pkl")
-            os.remove("Tc_model_8elem.pkl")
+    def __init__(self):
+        # load model and define global as class variables
+        self.model = joblib.load("Tc_model_8elem.pkl")
 
         self.elem_df = pd.read_csv("elem_df.csv")
         self.elems = self.elem_df["Symbol"].tolist()[::-1]

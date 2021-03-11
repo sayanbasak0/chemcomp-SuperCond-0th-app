@@ -12,11 +12,12 @@ from const_trans import constituent_transformer # required to load scikit-learn 
 
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
-OFFLINE_DEBUG = False
+
+plot_Composition = plot_compos.composition_8elem()
+get_Temperature = get_Tc.temperature_8elem()
+parse_elements = elements.elements_parser()
 
 app = Flask(__name__, static_url_path='/static' )
-
-
 
 @app.route('/about')
 def about():
@@ -136,21 +137,6 @@ def chem_comp():
     
 
 if __name__== '__main__':
-    if len(sys.argv)>1:
-        if sys.argv[1]=='local':
-            OFFLINE_DEBUG = True
-            plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
-            get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
-            parse_elements = elements.elements_parser()
-            app.run(port=8000, debug=True)
-        else:
-            plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
-            get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
-            parse_elements = elements.elements_parser()
-            app.run(port=8000, debug=True)
-    else:
-        plot_Composition = plot_compos.composition_8elem(OFFLINE_DEBUG)
-        get_Temperature = get_Tc.temperature_8elem(OFFLINE_DEBUG)
-        parse_elements = elements.elements_parser()
-        app.run(port=33507)
+    app.run(port=8000, debug=True)
+    # app.run(port=33507)
 
