@@ -36,6 +36,7 @@ class elements_parser:
             self.selected_elems2 = {"B":0.67,"Mg":0.33}
             with open(f'elements_sess1_{self.random_session}.pkl', 'wb') as f:
                 sess_dict1 = {}
+                sess_dict1["list_2"] = self.list_2
                 sess_dict1["list_1"] = self.list_1
                 sess_dict1["dict_1"] = self.dict_1
                 sess_dict1["defaultab1"] = self.defaultab1
@@ -45,6 +46,7 @@ class elements_parser:
             
             with open(f'elements_sess2_{self.random_session}.pkl', 'wb') as f:
                 sess_dict2 = {}
+                sess_dict2["list_1"] = self.list_1
                 sess_dict2["list_2"] = self.list_2
                 sess_dict2["dict_2"] = self.dict_2
                 sess_dict2["defaultab2"] = self.defaultab2
