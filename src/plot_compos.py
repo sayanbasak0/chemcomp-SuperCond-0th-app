@@ -42,7 +42,7 @@ class composition_8elem:
             stdScale=["Critical Temperature"]
         )
         temp_df = pd.read_csv(os.path.join(module_path,"data","data_df.csv"), usecols=["Critical Temperature"])
-        self.trans.fit(temp_df[:,["Critical_Temperature"]])
+        self.trans.fit(temp_df.loc[:,["Critical Temperature"]])
         self.plot_div = ""
         self.plot_script = ""
         self.elem_prop = {}
