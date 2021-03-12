@@ -30,11 +30,18 @@
     <body >
         <!-- Sidebar -->
         <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
+            <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
             <form action="/" method="POST">
-                <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="home"><i class="fa fa-home"></i> Home</button>
+            </form>
+            <form action="/chem_comp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
-                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+            </form>
+            <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+            <form action="/about" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
             </form>
         </div>
@@ -205,6 +212,7 @@
         </div>
         <div class="form-1">
             <form id="form1" action="{{custom_link}}crit_temp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <p>
                     <p>
                         <b>n = </b>

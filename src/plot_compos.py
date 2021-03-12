@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error 
-# from const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
+from .const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
 # from sklearn.pipeline import Pipeline
 # import warnings 
 # warnings.filterwarnings('ignore')
@@ -10,14 +10,15 @@ from sklearn.metrics import mean_absolute_error
 import numpy as np
 import pandas as pd
 
-
-
 #### After manually selecting elements update plot.
 from bokeh.plotting import figure
 from bokeh.embed import file_html,components
 from bokeh.models import Label,Legend,HoverTool,ColumnDataSource
 from bokeh.colors import HSL
 import pickle
+import joblib
+import os
+module_path = os.path.split(__file__)[0]
 
 class composition_8elem:
     def __init__(self, model):
@@ -26,7 +27,8 @@ class composition_8elem:
         # self.model = joblib.load("composTc_model_8elem.pkl")
         # with open("../../sc_data_inc/for_the_app/composTc_model_8elem_3.pkl",'rb') as f:
         #     self.model = pickle.load(f)
-        self.elem_df = pd.read_csv("elem_df.csv")
+        # print(os.path.join(module_path,"data","elem_df.csv"))
+        self.elem_df = pd.read_csv(os.path.join(module_path,"data/elem_df.csv"))
         self.elems = self.elem_df["Symbol"].tolist()[::-1]
         self.elems_x = [el+"_x" for el in self.elems]
         self.elems_b = [el+"_b" for el in self.elems]

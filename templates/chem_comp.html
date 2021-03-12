@@ -30,11 +30,18 @@
     <body >
         <!-- Sidebar -->
         <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
+            <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
             <form action="/" method="POST">
-                <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="home"><i class="fa fa-home"></i> Home</button>
-                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-flask"></i> Chemical Composition</button>
+            </form>
+            <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-flask"></i> Chemical Composition</button>
+            <form action="/crit_temp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+            </form>
+            <form action="/about" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
             </form>
         </div>
@@ -56,7 +63,7 @@
         <!-- <h1>{{head1}}</h1> -->
         <!-- Header -->
         <header class="w3-display-container w3-theme w3-padding" id="myHeader">
-            <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
+            <div style="display:block;position:sticky;position:-webkit-sticky"><i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> </div>
             <div class="w3-center">
                 <!-- <h4></h4> -->
                 <div class="w3-display-top">
@@ -128,6 +135,7 @@
                 <br>
                 T<sub>c</sub><sup>max</sup> = {{"%.0f"|format(maxTc)}} K = {{"%.0f"|format(maxTc-273.15)}}<sup>o</sup>C = {{"%.0f"|format((maxTc-273.15)*9/5+32)}}<sup>o</sup>F:</h3>
             <form action="/crit_temp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <div class="hidden-formula">
                     <input type="text" class="hidden-formula" id="formula-out" name="Chemical Formula"
                         value="{% for symb_x in comp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
@@ -180,6 +188,7 @@
         </div>
         <div class="form-1">
             <form id="form1" action="{{custom_link}}chem_comp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <p>
                     <!-- <p>
                         <button type="button" class="select-elems" value="1" name="Select All" onclick="select_all()">Select All</button>
