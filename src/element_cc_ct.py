@@ -47,6 +47,7 @@ class elements_parser:
         sess_dict2["no_of_elems2"] = self.no_of_elems2
         sess_dict2["prop_of_elems2"] = self.prop_of_elems2
         sess_dict2["selected_elems2"] = self.selected_elems2
+        os.makedirs(os.path.join(module_path,"data","temp"), exist_ok=True)
         with open(os.path.join(module_path,"data","temp",f"elements_sess2_{sekey}.pkl"), 'wb') as f:
             pickle.dump(sess_dict2, f)
         
@@ -64,6 +65,9 @@ class elements_parser:
         if dict_new.get('prop of elems'):
             self.prop_of_elems2 = float(dict_new.get('prop of elems'))
         if dict_new.get('Update Plot'):
-            self.defaultab2 = dict_new['Update Plot']
+            # self.defaultab2 = dict_new['Update Plot']
+            self.defaultab2 = "Prediction-Tab"
+        elif dict_new.get('Critical Temperature redirect'):
+            self.defaultab2 = "Prediction-Tab" 
         self.save(f'{self.random_session}')
         return self.list_1,self.list_2,self.dict_2,self.defaultab2,self.no_of_elems2,self.prop_of_elems2

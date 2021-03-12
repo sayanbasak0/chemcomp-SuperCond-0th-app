@@ -8,8 +8,8 @@ import sys
 # import elements
 import src.element_ct_cc as element_ct_cc
 import src.element_cc_ct as element_cc_ct
-### Load trained Random Forest Regressor model
-# from src.const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
+### required to load scikit-learn pipeline with customized transformer
+# from src.const_trans import constituent_transformer 
 import joblib
 from src.plot_compos import composition_8elem
 from src.get_Tc import temperature_8elem
@@ -25,18 +25,10 @@ def crit_temp():
     print(request.form.get('redirect'))
     if request.method == 'POST':
         sess_key = request.form.get('SESS_KEY')
-        if request.form.get("Update Plot"):
-            defaultab = "Prediction-Tab"
-        elif request.form.get("Critical Temperature redirect"):
-            defaultab = "Prediction-Tab"
-        else:
-            defaultab = "Method-Tab"
     if request.method == 'GET':
         sess_key = f"{np.random.randint(0,999999):08d}"
-        defaultab = "Periodic-Tab"
-
-    modelTc = joblib.load("src/data/Tc_model_8elem.pkl")
-    get_Temperature = temperature_8elem(modelTc)
+    
+    get_Temperature = temperature_8elem()
     parse_elements = element_cc_ct.elements_parser(random_session=sess_key)
     
     p_table,pong_table,selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
@@ -64,16 +56,10 @@ def chem_comp():
     print(request.form.get('redirect'))
     if request.method == 'POST':
         sess_key = request.form.get('SESS_KEY')
-        if request.form.get("Update Plot"):
-            defaultab = "Prediction-Tab"
-        else:
-            defaultab = "Method-Tab"
     if request.method == 'GET':
         sess_key = f"{np.random.randint(0,999999):08d}"
-        defaultab = "Periodic-Tab"
     
-    modelCompos = joblib.load("src/data/composTc_model_8elem.pkl")
-    plot_Composition = composition_8elem(modelCompos)
+    plot_Composition = composition_8elem()
     parse_elements = element_ct_cc.elements_parser(random_session=sess_key)
 
     p_table,pong_table,selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
@@ -114,7 +100,7 @@ def index():
     if request.method == 'POST':
         sess_key = request.form.get('SESS_KEY')
         if request.form.get('redirect') in ['chem_comp','crit_temp','about'] :
-            return redirect(url_for(request.form.get('redirect')), code=307)
+            return redirect(url_for(request.form.get('redirect')))
     if request.method == 'GET':
         sess_key = f"{np.random.randint(0,999999):08d}"
 
@@ -126,7 +112,6 @@ def index():
 import glob
 import os
 import time
-print(__name__)
 if __name__== '__main__':
     # cleaning old files
     files = glob.glob("src/data/temp/elements_sess?_*.pkl")
@@ -152,13 +137,6 @@ if __name__== '__main__':
                         pass
             else:
                 fileSessKeys.append(fileSessKey)
-    from src.const_trans import constituent_transformer
-    print("__main__ is executed!")
-    print(__file__)
-    print(__name__)
-    # parse_elements = elements.elements_parser(make_file=True, random_session=RANDOM_SESS_KEY)
-    # plot_Composition = plot_compos.composition_8elem()
-    # get_Temperature = get_Tc.temperature_8elem()
     
     # app.run(port=8000, debug=True)
     app.run(port=33507)
