@@ -18,61 +18,70 @@ from bokeh.colors import HSL
 import pickle
 import joblib
 import os
+import gc
 module_path = os.path.split(__file__)[0]
 
 class composition_8elem:
     def __init__(self):
         # load model and define global as class variables
         # self.model = model
-        self.model = joblib.load(os.path.join(module_path,"data","composTc_rfrPipe_8elem.pkl"))
         
-        self.elem_df = pd.read_csv(os.path.join(module_path,"data","elem_df.csv"))
-        self.elems = self.elem_df["Symbol"].tolist()[::-1]
-        self.elems_x = [el+"_x" for el in self.elems]
-        self.elems_b = [el+"_b" for el in self.elems]
-        self.elems_atomic = {el[0]:el[1] for el in zip(self.elems,self.elem_df["Atomic number"].tolist()[::-1])}
-        self.elems_mass = {el[0]:el[1] for el in zip(self.elems,self.elem_df["Atomic weight (u)"].tolist()[::-1])}
-        self.elem_group = {el[0]:el[1] for el in zip(self.elems,self.elem_df["Group"].tolist()[::-1])}
-        self.elem_period = {el[0]:el[1] for el in zip(self.elems,self.elem_df["Period"].tolist()[::-1])}
-        
-        self.trans = constituent_transformer(
-            col_names=self.elems,
-            sort_by=[self.elem_period,self.elem_group,self.elems_mass],
-            ext="_b",
-            stdScale=["Critical Temperature"]
-        )
-        temp_df = pd.read_csv(os.path.join(module_path,"data","data_df.csv"), usecols=["Critical Temperature"])
-        self.trans.fit(temp_df.loc[:,["Critical Temperature"]])
         self.plot_div = ""
         self.plot_script = ""
         self.elem_prop = {}
         self.compos = []
         self.maxTc = 0
-        self.pfig = figure(width=1200, height=540, x_range=(0, 150))
+        self.pfig = None
         
     def my_colors(self,ii,nn):
         return HSL(360*(ii+1)/nn,1,0.4).to_rgb().to_hex()
 
     def update_plot(self,dict_new):
-        
-        self.pfig = figure(width=1200, height=540, x_range=(0, 150))
+        elem_df = pd.read_csv(os.path.join(module_path,"data","elem_df.csv"), usecols=["Symbol","Atomic weight (u)", "Period", "Group"])
+        self.elems = elem_df["Symbol"].tolist()[::-1]
+        self.elems_x = [el+"_x" for el in self.elems]
+        self.elems_b = [el+"_b" for el in self.elems]
+        elems_mass = {el[0]:el[1] for el in zip(self.elems, elem_df["Atomic weight (u)"].tolist()[::-1])}
+        elem_group = {el[0]:el[1] for el in zip(self.elems, elem_df["Group"].tolist()[::-1])}
+        elem_period = {el[0]:el[1] for el in zip(self.elems, elem_df["Period"].tolist()[::-1])}
+        del(elem_df)
+        gc.collect()
+        trans = constituent_transformer(
+            col_names=self.elems,
+            sort_by=[elem_period, elem_group, elems_mass],
+            ext="_b",
+            stdScale=["Critical Temperature"]
+        )
+        del(elems_mass,elem_group,elem_period)
+        gc.collect()
+        temp_df = pd.read_csv(os.path.join(module_path,"data","data_df.csv"), usecols=["Critical Temperature"])
+        trans.fit(temp_df.loc[:,["Critical Temperature"]])
+        del(temp_df)
+        gc.collect()
         
         t_lim = [0,200]
-        
         test_X = pd.DataFrame(columns=self.elems_b+["Critical Temperature"])
-        UnScaled_T_c = np.linspace(t_lim[0],t_lim[1],201)
-        test_X["Critical Temperature"] = UnScaled_T_c
+        test_X["Critical Temperature"] = np.linspace(t_lim[0],t_lim[1],201)
         col_bool = list(filter(lambda x: dict_new[x[:-2]]>0, self.elems_b))
         col_vool = list(map(lambda x: dict_new[x[:-2]], col_bool))
         test_X.loc[:, col_bool] = col_vool
         col_out = list(filter(lambda x: dict_new[x]>0, self.elems))
-        
-        Y_pred = self.model.predict(
-            self.trans.transformIn(
+        test_X.fillna(0, inplace=True)
+        tran_X = trans.transformIn(
                 test_X.loc[:,self.elems_b+["Critical Temperature"]]
             )
+        test_X = test_X[col_bool+["Critical Temperature"]]
+        del(trans)
+        gc.collect()
+        model = joblib.load(os.path.join(module_path,"data","composTc_rfrPipe_8elem.pkl"))
+        pred_df = pd.DataFrame(
+            model.predict(
+                tran_X
+            )[:,:len(col_out)], 
+            columns=col_out
         )
-        pred_df = pd.DataFrame(Y_pred[:,:len(col_out)],columns=col_out)
+        del(model,tran_X)
+        gc.collect()
         line_types = ["dashed","solid"]
         elem_present = pred_df.loc[:,((pred_df[col_out]*test_X[col_bool].values).sum(axis=0)>0)].columns
         elem_present = list(zip(elem_present, 
@@ -82,12 +91,13 @@ class composition_8elem:
                         )
         elem_absent = pred_df.loc[:,((pred_df[col_out]*(1-test_X[col_bool].values)).sum(axis=0)>0)].columns
         elem_absent = list(zip(elem_absent, 
-                            map(lambda x: line_types[0], range(len(elem_absent))),
-                            map(lambda x: pred_df.iloc[-1,pred_df.columns.get_loc(x)], elem_absent)
+                                map(lambda x: line_types[0], range(len(elem_absent))),
+                                map(lambda x: pred_df.iloc[-1,pred_df.columns.get_loc(x)], elem_absent)
                             )
                         )
-        pred_df["Critical Temperature"] = UnScaled_T_c
-        
+        pred_df["Critical Temperature"] = test_X["Critical Temperature"]
+        del(test_X)
+        gc.collect()
         elems_list = sorted(elem_present+elem_absent,key=lambda wxyz: (-wxyz[2]))
         elem_list,dash_list,prop_list = list(zip(*elems_list))
         elem_list = list(elem_list)
@@ -111,6 +121,9 @@ class composition_8elem:
                                     'prop_maxTc': 100*pred_df.loc[self.maxTc,elem_list],
                                     'excess': list(map(lambda x: x=="dashed", dash_list))
                                     })
+                                    
+        self.pfig = figure(width=1200, height=540, x_range=(0, 150))
+        
         mfig = self.pfig.circle('x', 'y', source=source, color='#000000', line_alpha=0.2, fill_alpha=0, radius=0.5, line_width=2, hover_line_alpha=1.0)
         mfig = self.pfig.line('x', 'y', source=source, color='#000000', hover_line_width=2)
         legendttl = f"Composition at Max($T_c$) = {self.maxTc:.0f}K"
