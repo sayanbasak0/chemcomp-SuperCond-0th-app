@@ -34,6 +34,7 @@ class temperature_8elem:
             sort_by=[self.elem_period,self.elem_group,self.elems_mass],
             ext="_x"
         )
+        self.elem_dict = {}
         self.vcComp = []
         self.Comp = []
         self.vcTc = 0
@@ -53,8 +54,7 @@ class temperature_8elem:
         col_diff /= np.sum(col_diff,axis=1,keepdims=True)
         col_diff = np.unique(col_diff,axis=0)
         test_X[col_prop] = pd.DataFrame(col_diff,columns=col_prop)
-
-        
+        test_X.fillna(0, inplace=True)
         Y_pred = self.model.predict(
             self.trans.transformIn(
                 test_X.loc[:,self.elems_x]
@@ -65,11 +65,13 @@ class temperature_8elem:
         self.vcTc = Y_pred[best_index]
         self.Comp = [(x[:-2],y) for x,y in zip(col_prop,col_vrop)]
         self.vcComp = [(x[:-2],y) for x,y in zip(col_prop,col_diff[best_index])]
+        self.elem_dict = {elem:pres*100 for elem,pres in dict_new.items() }
+        self.elem_dict.update({em:0 for em in ["space","arrow","Ln","An"]})
         
-        return self.Tc,self.Comp,self.vcTc,self.vcComp
+        return self.Tc,self.Comp,self.vcTc,self.vcComp,self.elem_dict
 
 
     def preTc(self):
-        return self.Tc,self.Comp,self.vcTc,self.vcComp
+        return self.Tc,self.Comp,self.vcTc,self.vcComp,self.elem_dict
 
 
