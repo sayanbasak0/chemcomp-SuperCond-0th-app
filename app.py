@@ -8,11 +8,13 @@ import sys
 # import elements
 import src.element_ct_cc as element_ct_cc
 import src.element_cc_ct as element_cc_ct
-### required to load scikit-learn pipeline with customized transformer
-# from src.const_trans import constituent_transformer 
+
 import joblib
 from src.plot_compos import composition_8elem
 from src.get_Tc import temperature_8elem
+# from memory_profiler import memory_usage
+# from functools import partial
+import gc
 
 mylink = "/"
 HEADING = "Searching for chemical compositions of Superconductors"
@@ -28,11 +30,20 @@ def crit_temp():
     if request.method == 'GET':
         sess_key = f"{np.random.randint(0,999999):08d}"
     
-    get_Temperature = temperature_8elem()
     parse_elements = element_cc_ct.elements_parser(random_session=sess_key)
-    
     p_table,pong_table,selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
+    part_f = partial(parse_elements.update_composition, request.form)
+    mem_use = memory_usage(part_f)
+    print(f"Memory Usage - crit_temp - Parsing request: \n{mem_use}")
+    del(parse_elements)
+    gc.collect()
+    get_Temperature = temperature_8elem()
     Tc,comp_list,altTc,altcomp_list,pelems = get_Temperature.geTc(selems)
+    part_f = partial(get_Temperature.geTc,selems)
+    mem_use = memory_usage(part_f)
+    print(f"Memory Usage - crit_temp - Model Evaluation: \n{mem_use}")
+    del(get_Temperature)
+    gc.collect()
     return render_template('crit_temp.html', 
                             p_table=p_table, 
                             pong_table=pong_table, 
@@ -59,11 +70,20 @@ def chem_comp():
     if request.method == 'GET':
         sess_key = f"{np.random.randint(0,999999):08d}"
     
-    plot_Composition = composition_8elem()
     parse_elements = element_ct_cc.elements_parser(random_session=sess_key)
-
     p_table,pong_table,selems,defaultab,no_of_elems = parse_elements.update_elements(request.form)
+    # part_f = partial(parse_elements.update_elements, request.form)
+    # mem_use = memory_usage(part_f)
+    # print(f"Memory Usage - chem_comp - Parsing request: \n{mem_use}")
+    del(parse_elements)
+    gc.collect()
+    plot_Composition = composition_8elem()
     plot_script,plot_div,pelems,maxTc,comp_list = plot_Composition.update_plot(selems)
+    # part_f = partial(plot_Composition.update_plot,selems)
+    # mem_use = memory_usage(part_f)
+    # print(f"Memory Usage - chem_comp - Model Evaluation: \n{mem_use}")
+    del(plot_Composition)
+    gc.collect()
     return render_template('chem_comp.html', 
                             p_table=p_table, 
                             pong_table=pong_table, 
@@ -139,5 +159,5 @@ if __name__== '__main__':
                 fileSessKeys.append(fileSessKey)
     
     # app.run(port=8000, debug=True)
-    app.run(port=33507,debug=True)
+    app.run(port=33507)
 
