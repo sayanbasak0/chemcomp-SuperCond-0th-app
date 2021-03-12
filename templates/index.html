@@ -23,12 +23,33 @@
             #standalone_button {
                 border: 1px solid black !important;
             }
+            .large-box {
+                display:inline-block;
+                width:15em;
+                height:10em;
+                padding: 10px;
+                font-size: 20px;
+                background-color: rgba(250,250,250,0.75);
+                color: rgba(0,0,0,0.75);
+            }
+            .large-box:hover {
+                color: rgba(250,250,250,0.75);
+                background-color: rgba(0,0,0,0.75);
+                font-weight: bold;
+            }
+            .redirects-only {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                flex-grow: initial;
+                justify-content: space-evenly;
+            }
         </style>
     </head>
     
     <body class="bgimg-1">
         <!-- Sidebar -->
-        <div style="background:rgba(255,255,255,0.75);">
+        <div style="background:rgba(255, 255, 255, 0.75);">
             <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
                 <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
                 <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-home"></i> Home</button>
@@ -74,8 +95,21 @@
                     </div> -->
                 </div>
             </header>
-            <div id="Home-Tab" style="padding:7% 10%">
-                
+            <div id="Home-Tab" style="padding:15% 10%">
+                <div class="redirects-only" >
+                    <form action="/chem_comp" method="POST">
+                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                        <button type="submit" class="large-box" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
+                    </form>
+                    <form action="/crit_temp" method="POST">
+                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                        <button type="submit" class="large-box" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
+                    </form>
+                    <form action="/about" method="POST">
+                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                        <button type="submit" class="large-box" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
+                    </form>
+                </div>
             </div>
         </div>
     </body>
