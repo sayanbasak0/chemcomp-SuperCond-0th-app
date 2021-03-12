@@ -32,12 +32,12 @@ def crit_temp():
     parse_elements = element_cc_ct.elements_parser(random_session=sess_key)
     
     p_table,pong_table,selems,defaultab,no_of_elems,prop_of_elems = parse_elements.update_composition(request.form)
-    Tc,comp_list,altTc,altcomp_list = get_Temperature.geTc(selems)
+    Tc,comp_list,altTc,altcomp_list,pelems = get_Temperature.geTc(selems)
     return render_template('crit_temp.html', 
                             p_table=p_table, 
                             pong_table=pong_table, 
                             selems=selems,
-                            pelems=selems,
+                            pelems=pelems,
                             Tc=Tc,
                             comp_list=comp_list,
                             altTc=altTc,
@@ -139,5 +139,5 @@ if __name__== '__main__':
                 fileSessKeys.append(fileSessKey)
     
     # app.run(port=8000, debug=True)
-    app.run(port=33507)
+    app.run(port=33507,debug=True)
 

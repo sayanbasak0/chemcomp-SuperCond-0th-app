@@ -151,9 +151,9 @@
                 {% for elem in p_table %}
                 <div id="button-{{elem}}-s" class="ck-button button-{{elem}}" style="background:linear-gradient(90deg, 
                                                                                     rgba(0, 200, 0, 1) 0%, 
-                                                                                    rgba(0, 200, 0, 1) {{pelems[elem]}}%, 
-                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) {{pelems[elem]}}%, 
-                                                                                    rgba(200, {{150+50*((100-pelems[elem])//100)}}, {{100+100*((100-pelems[elem])//100)}}, 1) 100% )">
+                                                                                    rgba(0, 200, 0, 1) {{selems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-selems[elem])//100)}}, {{100+100*((100-selems[elem])//100)}}, 1) {{pelems[elem]}}%, 
+                                                                                    rgba(200, {{150+50*((100-selems[elem])//100)}}, {{100+100*((100-selems[elem])//100)}}, 1) 100% )">
                     
                     <div class="hidden-range dis-{{elem}}">
                         <input id="range-{{elem}}-s" class="hidden-range-s range-{{elem}}" type="range" value="{{pelems[elem]/100}}" min=0 max=1 step=0.01 onchange="sync_tabs('range','{{elem}}','s', 0)" tabindex="0">
@@ -537,7 +537,7 @@
                 }
             }
             document.getElementById( "defaultOpen-"+document.getElementById("update-plot").value ).click();
-            
+            reset_to_last();
             var select_elem_list = [];
             document.getElementById("type-elements").value = select_elem_list.join(",");
             discontent = document.querySelectorAll(".dis-Ln,.dis-An,.dis-arrow,.dis-space");
