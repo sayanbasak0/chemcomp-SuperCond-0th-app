@@ -9,7 +9,7 @@ import sys
 import src.element_ct_cc as element_ct_cc
 import src.element_cc_ct as element_cc_ct
 ### Load trained Random Forest Regressor model
-from src.const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
+# from src.const_trans import constituent_transformer # required to load scikit-learn pipeline with customized transformer
 import joblib
 from src.plot_compos import composition_8elem
 from src.get_Tc import temperature_8elem
@@ -105,8 +105,7 @@ def about():
     return render_template('about.html', 
                             head1=HEADING,
                             custom_link=mylink,
-                            sess_key=sess_key
-                            )
+                            sess_key=sess_key)
 
 @app.route('/',methods = ['POST', 'GET'])
 def index():
@@ -122,12 +121,12 @@ def index():
     return render_template('index.html', 
                             head1=HEADING,
                             custom_link=mylink,
-                            sess_key=sess_key
-                            )
+                            sess_key=sess_key)
 
 import glob
 import os
 import time
+print(__name__)
 if __name__== '__main__':
     # cleaning old files
     files = glob.glob("src/data/temp/elements_sess?_*.pkl")
@@ -153,11 +152,14 @@ if __name__== '__main__':
                         pass
             else:
                 fileSessKeys.append(fileSessKey)
-    
+    from src.const_trans import constituent_transformer
+    print("__main__ is executed!")
+    print(__file__)
+    print(__name__)
     # parse_elements = elements.elements_parser(make_file=True, random_session=RANDOM_SESS_KEY)
     # plot_Composition = plot_compos.composition_8elem()
     # get_Temperature = get_Tc.temperature_8elem()
-
+    
     # app.run(port=8000, debug=True)
     app.run(port=33507)
 
