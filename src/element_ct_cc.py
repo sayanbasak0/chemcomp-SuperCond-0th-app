@@ -65,6 +65,8 @@ class elements_parser:
             self.defaultab1 = "Prediction-Tab"
         elif dict_new.get("Critical Temperature redirect"):
             self.defaultab1 = "Prediction-Tab"
+        elif dict_new.get('about-redirect-method'):
+            self.defaultab2 = "Method-Tab" 
         else:
             self.defaultab1 = "Periodic-Tab"
         self.save(f'{self.random_session}')

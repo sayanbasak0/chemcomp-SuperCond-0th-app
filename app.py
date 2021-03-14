@@ -1,18 +1,18 @@
 from flask import Flask,render_template,request,url_for,redirect
-from bokeh.models.annotations import Title
-from bokeh.plotting import figure,show
+# from bokeh.models.annotations import Title
+# from bokeh.plotting import figure,show
 import numpy as np
-from bokeh.embed import file_html,components
-from bokeh.resources import CDN
-import sys
+# from bokeh.embed import file_html,components
+# from bokeh.resources import CDN
+# import sys
 # import elements
 import src.element_ct_cc as element_ct_cc
 import src.element_cc_ct as element_cc_ct
 
-import joblib
+# import joblib
 from src.plot_compos import composition_8elem
 from src.get_Tc import temperature_8elem
-# from memory_profiler import memory_usage
+# from memory_profiler import memory_usage,profile
 # from functools import partial
 import gc
 
@@ -21,8 +21,9 @@ HEADING = "Searching for chemical compositions of Superconductors"
 
 app = Flask(__name__, static_url_path='/static' )
 
-@app.route('/crit_temp',methods = ['POST','GET'])
+@app.route('/crit_temp',methods = ['POST','GET'], endpoint='crit_temp')
 def crit_temp():
+    gc.collect()
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -61,8 +62,9 @@ def crit_temp():
                             sess_key=sess_key)
 
 
-@app.route('/chem_comp',methods = ['POST','GET'])
+@app.route('/chem_comp',methods = ['POST','GET'], endpoint='chem_comp')
 def chem_comp():
+    gc.collect()
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -102,6 +104,7 @@ def chem_comp():
 
 @app.route('/about',methods = ['POST','GET'])
 def about():
+    gc.collect()
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -115,6 +118,7 @@ def about():
 
 @app.route('/',methods = ['POST', 'GET'])
 def index():
+    gc.collect()
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':

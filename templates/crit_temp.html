@@ -98,10 +98,31 @@
                 Superconducting Material Database from NIMS.
                 <a href="https://supercon.nims.go.jp/en/" target="_blank" rel="noopener noreferrer">SuperCon</a>.
             </p>
+            <h4>
+                Data cleaning:
+            </h4>
+            <p>
+                First, the compounds with unknown critical temperatures (including zero temperature) were removed.<br>
+                Then the critical temperature of compounds with identical relative composition were substituted with their largest temperature.<br>
+                Finally, the elements which made up less than 94 compounds were excluded.<br>
+                Excluding compounds with statistically less significant elements changed the statistics of other compound as well<br> 
+                - the number(94) was chosen close to 100 such that it does not change the statistics significantly of other elements.
+                <img src="/static/data_clean.png" alt="Data cleaning - excluding elements forming statistically small(&lesssim; 100) number of compounds">
+            </p>
             <h3> Machine Learning model: </h3>
-            <p> Random Forest Regressor </p>
+            <p> 
+                Random Forest Regressor: <br>
+                Number of estimators (decision trees in forest) = 50<br>
+                Max depth = 40
+            </p>
+            <h4> Training &amp; Validation: </h4>
+            <p>
+                Data - Training-Validation split : 85% / 15%<br>
+                R<sup>2</sup>-score - Training / Validation : 98.50% / 89.14%<br>
+                <img src="/static/Tc_train_nest50_md40.png" alt="Predicting Critical Temperature from Composition">
+            </p>
             <h3> Input Features: </h3>
-            <p> Single or multiple Element(s) upto <b>8</b> with relative proportion (normalized to 1) present in the chemical formula. </p>
+            <p> Single or multiple Element(s) [upto <b>8</b>] with relative proportion (normalized to 1) present in the chemical formula. </p>
             <h3> Output: </h3>
             <p> Critical Temperature. </p>
             <h3> How nearby compositions are explored?</h3>
@@ -135,12 +156,20 @@
             </h2>
             <h3>
                 {% for symb_x in altcomp_list %}
-                {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
+                    {{symb_x[0]}}<sub>{{"%.4f"|format(symb_x[1])}}</sub>
                 {% endfor %}
                 <br>
                 The predicted superconducting Critical Temperature for this Chemical Composition is:
                 T<sub>c</sub> = {{"%.1f"|format(altTc)}} K = {{"%.1f"|format(altTc-273.15)}}<sup>o</sup>C = {{"%.1f"|format((altTc-273.15)*9/5+32)}}<sup>o</sup>F
             </h3>
+            <form action="/crit_temp" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                <div class="hidden-formula">
+                    <input type="text" class="hidden-formula" id="formula-altout" name="Chemical Formula"
+                        value="{% for symb_x in altcomp_list %}{{symb_x[0]}}_{{symb_x[1]}},{% endfor %}">
+                </div>
+                <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="Critical Temperature redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Check nearby compositions for larger Critical Temperature</button>
+            </form>
             <hr style="width:100%;text-align:left;margin-left:0">
         </div>
         <div id="Periodic-Tab" class="tabcontent">

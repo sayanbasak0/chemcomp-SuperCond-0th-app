@@ -1,6 +1,6 @@
 from sklearn import base
 from sklearn.preprocessing import StandardScaler
-import numpy as np
+# import numpy as np
 import pandas as pd
 
 ### Constituent Transformer
@@ -68,6 +68,18 @@ class constituent_transformer(base.BaseEstimator, base.TransformerMixin):
                     i += 1
             Y.append(Yrow)
         Y = pd.DataFrame(Y)
+        if self.passthru:
+            Y[self.passthru] = X[self.passthru]
+        if self.stdScale:
+            Y[self.stdScale] = self.ssc.transform(X[self.stdScale])
+        return Y
+    def static_transformer(self, X, cols):
+        cols = sorted(cols, key=lambda x: [-sb[x] for sb in self.sort_by])
+        Y = pd.DataFrame(columns=range(3*self.maxOutCols), index=range(len(X)))
+        for i,col in enumerate(cols):
+            for j in range(len(self.sort_by)):
+                Y[len(self.sort_by)*i+j] = self.sort_by[j][col]*X.loc[:,col+self.ext]
+        Y.fillna(0, inplace=True)
         if self.passthru:
             Y[self.passthru] = X[self.passthru]
         if self.stdScale:
