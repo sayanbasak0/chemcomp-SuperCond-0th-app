@@ -106,7 +106,7 @@
                     <li> 
                         <h4>Given a set of Elements:</h4> 
                         Select the elements in the 
-                        <form action="/chem_comp" method="POST">
+                        <form style="display:inline;" action="/chem_comp" method="POST">
                             <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                             <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
                         </form>
@@ -114,23 +114,35 @@
                         Find the optimal composition which maximizes Critical Temperature.
                         <br>
                         Bonus: Cross check the Max(T<sub>c</sub>) of this composition from 
-                        <form action="/crit_temp" method="POST">
+                        <form style="display:inline;" action="/crit_temp" method="POST">
                             <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                             <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
                         </form>
-                        page.
+                        page.<br>
+                        Jump to  
+                        <form style="display:inline;" action="/crit_temp" method="POST">
+                            <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                            <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="about-redirect-method" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition - Method</button>
+                        </form> 
+                        tab for more details.
                     </li>
                     <li>
                         <h4>If you know the Composition:</h4> 
                         Select the relative proportion of elements in the 
-                        <form action="/crit_temp" method="POST">
+                        <form style="display:inline;" action="/crit_temp" method="POST">
                             <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                             <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
                         </form>
                         page.<br>
                         Get the Critical Temperature.
                         <br>
-                        Bonus: Also checks for nearby compositions for a larger Critical Temperature.
+                        Bonus: Also checks for nearby compositions for a larger Critical Temperature.<br>
+                        Jump to  
+                        <form style="display:inline;" action="/crit_temp" method="POST">
+                            <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                            <button type="submit" id="standalone_button" class="w3-bar-item w3-button w3-large" name="about-redirect-method" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature - Method</button>
+                        </form> 
+                        tab for more details.
                     </li>
                 </ul>
                 <h2>
@@ -165,7 +177,6 @@
                             </li>
                         </ul>
                     </li>
-                    
                 </ul>
                 <h2>
                     References:
