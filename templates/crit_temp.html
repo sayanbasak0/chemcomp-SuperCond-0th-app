@@ -44,6 +44,10 @@
                 <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                 <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
             </form>
+            <form action="/api" method="POST">
+                <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="api"><i class="fa fa-code"></i> APIs</button>
+            </form>
         </div>
         
         <!-- Page Content -->

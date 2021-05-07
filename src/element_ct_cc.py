@@ -71,3 +71,24 @@ class elements_parser:
             self.defaultab1 = "Periodic-Tab"
         self.save(f'{self.random_session}')
         return self.list_1,self.list_2,self.dict_1,self.defaultab1,self.no_of_elems1
+
+    
+    def get_elements(self,dict_new):
+        self.load(f'{self.random_session}')
+        count = 0
+        if dict_new.get('elements'):
+            self.selected_elems1 = dict_new.get('elements').split(',')
+            for dkey in self.dict_1.keys():
+                if self.dict_1[dkey]!=-1:
+                    if dkey in self.selected_elems1:
+                        self.dict_1[dkey] = 1
+                        count += 1
+                    else:
+                        self.dict_1[dkey] = 0
+        else:
+            return "Missing argument: elements"
+        if count>8:
+            return "Too many elements. Must be <=8"
+        if count<2:
+            return "Too few elements. Must be >=2"
+        return self.dict_1

@@ -44,6 +44,10 @@
                     <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="crit_temp"><i class="fa fa-thermometer-three-quarters"></i> Critical Temperature</button>
                 </form>
                 <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-question-circle"></i> About</button>
+                <form action="/api" method="POST">
+                    <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="api"><i class="fa fa-code"></i> APIs</button>
+                </form>
             </div>
             
             <!-- Page Content -->
@@ -151,6 +155,9 @@
                 <ul>
                     <li>
                         This app: <a href="https://myzerothapp.herokuapp.com/" target="_blank" rel="noopener noreferrer">https://myzerothapp.herokuapp.com/</a>
+                    </li>
+                    <li>
+                        APIs: <a href="https://myzerothapp.herokuapp.com/api" target="_blank" rel="noopener noreferrer">https://myzerothapp.herokuapp.com/api</a>
                     </li>
                     <li>
                         Github repo: <a href="https://github.com/sayanbasak0/chemcomp-SuperCond-0th-app" target="_blank" rel="noopener noreferrer">https://github.com/sayanbasak0/chemcomp-SuperCond-0th-app</a>

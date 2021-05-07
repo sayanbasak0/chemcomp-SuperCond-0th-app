@@ -181,3 +181,77 @@ class composition_8elem:
         self_plot_script,self_plot_div = components(self_pfig)
         
         return self_plot_script,self_plot_div,self_elem_prop,self_maxTc,self_compos
+
+    def get_compos(self,dict_new):
+        elem_df = pd.read_csv(os.path.join(module_path,"data","elem_df.csv"), usecols=["Symbol", "Element", "Atomic weight (u)", "Period", "Group"])
+        self_elems = elem_df["Symbol"].tolist()[::-1]
+        # self_elems_x = [el+"_x" for el in self_elems]
+        self_elems_b = [el+"_b" for el in self_elems]
+        elems_mass = {el[0]:el[1] for el in zip(self_elems, elem_df["Atomic weight (u)"].tolist()[::-1])}
+        elem_group = {el[0]:el[1] for el in zip(self_elems, elem_df["Group"].tolist()[::-1])}
+        elem_period = {el[0]:el[1] for el in zip(self_elems, elem_df["Period"].tolist()[::-1])}
+        self_elements = {el[0]:el[1] for el in zip(self_elems, elem_df["Element"].tolist()[::-1])}
+        del(elem_df)
+        gc.collect()
+        trans = constituent_transformer(
+            col_names=self_elems,
+            sort_by=[elem_period, elem_group, elems_mass],
+            ext="_b",
+            stdScale=["Critical Temperature"]
+        )
+        del(elems_mass,elem_group,elem_period)
+        gc.collect()
+        temp_df = pd.read_csv(os.path.join(module_path,"data","data_df.csv"), usecols=["Critical Temperature"])
+        trans.fit(temp_df.loc[:,["Critical Temperature"]])
+        del(temp_df)
+        gc.collect()
+        
+        t_lim = [0,200]
+        col_bool = list(filter(lambda x: dict_new[x[:-2]]>0, self_elems_b))
+        col_vool = list(map(lambda x: dict_new[x[:-2]], col_bool))
+        test_X = pd.DataFrame(columns=col_bool+["Critical Temperature"])
+        test_X["Critical Temperature"] = np.linspace(t_lim[0],t_lim[1],t_lim[1]+1)
+        test_X.loc[:, col_bool] = col_vool
+        col_out = list(filter(lambda x: dict_new[x]>0, self_elems))
+        test_X.fillna(0, inplace=True)
+        
+        tran_X = trans.static_transformer(
+                X=test_X.loc[:,col_bool+["Critical Temperature"]],
+                cols=col_out
+            )
+        del(trans)
+        gc.collect()
+        model = joblib.load(os.path.join(module_path,"data","composTc_rfrPipe_8elem_nest50_md40.pkl"))
+        # with open(os.path.join(module_path,'data','predict_composTc_rfrPipe_8elem_new.pkl'), 'rb') as f:
+        #     model_predict = dill.load(f)
+        pred_df = pd.DataFrame(
+            model.predict(
+                tran_X
+            )[:,:len(col_out)], 
+            columns=col_out
+        )
+        del(model,tran_X)
+        gc.collect()
+        elem_present = pred_df.loc[:,((pred_df[col_out]*test_X[col_bool].values).sum(axis=0)>0)].columns
+        elem_present = list(zip(elem_present, 
+                                map(lambda x: pred_df.iloc[-1,pred_df.columns.get_loc(x)], elem_present)
+                            )
+                        )
+        elem_absent = []
+        pred_df["Critical Temperature"] = test_X["Critical Temperature"]
+        del(test_X)
+        gc.collect()
+        elems_list = sorted(elem_present+elem_absent,key=lambda wxyz: (-wxyz[1]))
+        elem_list,prop_list = list(zip(*elems_list))
+        elem_list = list(elem_list)
+        prop_list = list(prop_list)
+        
+        maxTc_indx = 0
+        for i in range(len(pred_df)-1,0,-1):
+            if any(pred_df.loc[i,elem_list]!=pred_df.loc[i-1,elem_list]):
+                maxTc_indx = i
+                break
+        self_maxTc = pred_df.loc[maxTc_indx,"Critical Temperature"]
+        self_compos = [(sym,x) for sym,x in zip(elem_list,prop_list) if x>0]
+        
+        return self_maxTc,self_compos
