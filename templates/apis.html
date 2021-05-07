@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
         <link rel="stylesheet" href="{{custom_link}}static/mystyle.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.1.1/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.3.0/font-awesome-animation.css"/>
         
         <style>
             /* First image (Logo. Full height) */
@@ -23,36 +23,32 @@
             #standalone_button {
                 border: 1px solid black !important;
             }
-            .large-box {
-                display:inline-block;
-                width:15em;
-                height:10em;
-                padding: 10px;
-                font-size: 20px;
-                background-color: rgba(250,250,250,0.75);
-                color: rgba(0,0,0,0.75);
+            pre, code {
+                font-family: monospace, monospace;
+                color: rgba(150,0,0,1);
             }
-            .large-box:hover {
-                color: rgba(250,250,250,0.75);
-                background-color: rgba(0,0,0,0.75);
-                font-weight: bold;
+            pre {
+                overflow: auto;
             }
-            .redirects-only {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                flex-grow: initial;
-                justify-content: space-evenly;
+            pre > code {
+                display: block;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                background: rgba(255,255,255,0.4);
+                word-wrap: normal;
             }
         </style>
     </head>
-    
+        
     <body class="bgimg-1">
         <!-- Sidebar -->
-        <div style="background:rgba(255, 255, 255, 0.75);">
+        <div style="background:rgba(255,255,255,0.75);">
             <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5;width:250px" id="mySidebar">
                 <button type="button" class="w3-bar-item w3-button w3-large" onclick="w3_close()"><i class="fa fa-close"></i> Close</button>
-                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-home"></i> Home</button>
+                <form action="/" method="POST">
+                    <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
+                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="home"><i class="fa fa-home"></i> Home</button>
+                </form>
                 <form action="/chem_comp" method="POST">
                     <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                     <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="chem_comp"><i class="fa fa-flask"></i> Chemical Composition</button>
@@ -65,10 +61,8 @@
                     <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
                     <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="about"><i class="fa fa-question-circle"></i> About</button>
                 </form>
-                <form action="/api" method="POST">
-                    <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
-                    <button type="submit" class="w3-bar-item w3-button w3-large" name="redirect" value="api"><i class="fa fa-code"></i> APIs</button>
-                </form>
+                <button type="button" class="w3-bar-item w3-button w3-large w3-black" onclick="w3_close()"><i class="fa fa-code"></i> APIs</button>
+                
             </div>
             
             <!-- Page Content -->
@@ -89,35 +83,55 @@
             <header class="bgimg-1 w3-display-container w3-theme w3-padding" id="myHeader">
                 <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
                 <div class="w3-center">
-                    <h4></h4>
+                    <!-- <h4></h4> -->
                     <div class="w3-display-top">
                         <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"><i class="fa fa-refresh fa-spin"> </i> {{head1}}</span>
                     </div>
-                    <h1 class="w3-xxxlarge w3-animate-bottom"> </h1>
+                    <h1 class="w3-xxxlarge w3-animate-bottom"><span class="w3-center"> How to use the API(s) <i class="fa fa-question faa-pulse animated faa-fast"></i></span></h1>
                     <!-- <div class="w3-padding-32">
                         <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:700;">GET STARTED</button>
                     </div> -->
                 </div>
             </header>
-            <div id="Home-Tab" style="padding:15% 10%">
-                <div class="redirects-only" >
-                    <form action="/chem_comp" method="POST">
-                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
-                        <button type="submit" class="large-box" name="redirect" value="chem_comp">Find <br><i class="fa fa-flask"></i><b> Chemical Composition</b><br>from Selected Elements</button>
-                    </form>
-                    <form action="/crit_temp" method="POST">
-                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
-                        <button type="submit" class="large-box" name="redirect" value="crit_temp">Get <br><i class="fa fa-thermometer-three-quarters"></i><b> Critical Temperature</b><br>from Chemical Composition</button>
-                    </form>
-                    <form action="/about" method="POST">
-                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
-                        <button type="submit" class="large-box" name="redirect" value="about">More <i class="fa fa-question-circle"></i><b> About</b> this site</button>
-                    </form>
-                    <form action="/api" method="POST">
-                        <input style="display:none" value="{{sess_key}}" name="SESS_KEY">
-                        <button type="submit" class="large-box" name="redirect" value="about"> <i class="fa fa-code"></i><b> API</b>s </button>
-                    </form>
-                </div>
+            <div id="API-Tab" style="padding:7% 10%">
+                <h3>
+                    Chemical Composition from list of elements.
+                </h3>
+                <p>
+                    url=<i>
+                        https://myzerothapp.herokuapp.com/api/chem_comp?elements=&lt;elements&gt;
+                    </i><br>
+                    <i>&lt;elements&gt;</i>: 
+                    <ul>
+                        <li>Use chemical symbol of elements.*</li>
+                        <li>Symbols must be separated by comma[,].</li>
+                        <li>Number of elements should be atleast 2 and atmost 8.</li>
+                        <li>e.g.: url=https://myzerothapp.herokuapp.com/api/chem_comp?elements=Mg,B</li>
+                    </ul>
+                <h3>
+                    Critical temperature from Chemical Composition
+                </h3>
+                <p>
+                    url=<i>
+                        https://myzerothapp.herokuapp.com/api/crit_temp?formula=&lt;formula&gt;
+                    </i><br>
+                    <i>&lt;formula&gt;</i>: 
+                    <ul>
+                        <li>Use chemical symbol of element(s) and their corresponding proportion(s)[>0].*</li>
+                        <li>Each symbol and proportion must be separated by underscore[_]</li>
+                        <li>Symbol_proportion must be separated by comma[,].</li>
+                        <li>Atleast 1 and atmost 8 element(s) and proportion(s) should be in the formula.</li>
+                        <li>e.g.: url=https://myzerothapp.herokuapp.com/api/crit_temp?formula=Mg_0.33,B_0.67</li>
+                    </ul>
+                </p>
+                Sample python code:
+                <pre><code>import urllib.requests
+with urllib.request.urlopen(url) as response:
+    resp = eval(response.read())
+    if (resp[Error]):
+        print("Error:", resp[Error])</code></pre>
+                </p>
+                * Invalid chemical symbols will be ignored.
             </div>
         </div>
     </body>

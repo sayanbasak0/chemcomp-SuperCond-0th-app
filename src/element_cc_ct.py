@@ -75,3 +75,32 @@ class elements_parser:
             self.defaultab2 = "Periodic-Tab" 
         self.save(f'{self.random_session}')
         return self.list_1,self.list_2,self.dict_2,self.defaultab2,self.no_of_elems2,self.prop_of_elems2
+
+    def get_composition(self,dict_new):
+        self.load(f'{self.random_session}')
+        count = 0
+        if dict_new.get('formula'):
+            try:
+                self.selected_elems2 = {elem_prop.split('_')[0]:elem_prop.split('_')[1] for elem_prop in dict_new.get('formula').strip(",").split(',') }
+            except Exception:
+                return "Query Format error!"
+            for dkey in self.dict_2.keys():
+                if self.dict_2[dkey]!=-1:
+                    if dkey in self.selected_elems2:
+                        try:
+                            self.dict_2[dkey] = float(self.selected_elems2[dkey])
+                            if self.dict_2[dkey]>0:
+                                count += 1
+                            else:
+                                return f"[{dkey}]: -ve element proportion!"
+                        except Exception:
+                            return f"[{dkey}]: Non-numeric element proportion!"
+                    else:
+                        self.dict_2[dkey] = 0
+        else:
+            return "Missing argument: formula"
+        if count>8:
+            return "Too many elements. Must be <=8"
+        if count<1:
+            return "Too few elements. Must be >=1"
+        return self.dict_2

@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,url_for,redirect
+from flask import Flask,render_template,request,url_for,redirect,jsonify
 # from bokeh.models.annotations import Title
 # from bokeh.plotting import figure,show
 import numpy as np
@@ -21,9 +21,24 @@ HEADING = "Searching for chemical compositions of Superconductors"
 
 app = Flask(__name__, static_url_path='/static' )
 
+
+@app.route('/api/crit_temp',methods = ['GET'])
+def api_crit_temp():
+    print("/api_crit_temp")
+    print(request.method)
+    print(request.form.get('redirect'))
+    parse_elements = element_cc_ct.elements_parser()
+    selems = parse_elements.get_composition(request.args)
+    if type(selems)==str:
+        return jsonify({"Error": selems})
+    get_Temperature = temperature_8elem()
+    Tc,comp_list = get_Temperature.geTc(selems)
+    return jsonify({"Composition":comp_list, "Critical Temperature":Tc, "Error":""})
+
 @app.route('/crit_temp',methods = ['POST','GET'], endpoint='crit_temp')
 def crit_temp():
     gc.collect()
+    print("/crit_temp")
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -39,7 +54,7 @@ def crit_temp():
     del(parse_elements)
     gc.collect()
     get_Temperature = temperature_8elem()
-    Tc,comp_list,altTc,altcomp_list,pelems = get_Temperature.geTc(selems)
+    Tc,comp_list,altTc,altcomp_list,pelems = get_Temperature.scanTc(selems)
     # part_f = partial(get_Temperature.geTc,selems)
     # mem_use = memory_usage(part_f)
     # print(f"Memory Usage - crit_temp - Model Evaluation: \n{mem_use}")
@@ -62,9 +77,23 @@ def crit_temp():
                             sess_key=sess_key)
 
 
+@app.route('/api/chem_comp',methods = ['GET'])
+def api_chem_comp():
+    print("/api_chem_comp")
+    print(request.method)
+    print(request.form.get('redirect'))
+    parse_elements = element_ct_cc.elements_parser()
+    selems = parse_elements.get_elements(request.args)
+    if type(selems)==str:
+        return jsonify({"Error": selems})
+    plot_Composition = composition_8elem()
+    maxTc,comp_list = plot_Composition.get_compos(selems)
+    return jsonify({"Best Composition":comp_list,"Max Critical Temperature":maxTc, "Error":""})
+
 @app.route('/chem_comp',methods = ['POST','GET'], endpoint='chem_comp')
 def chem_comp():
     gc.collect()
+    print("/chem_comp")
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -105,6 +134,7 @@ def chem_comp():
 @app.route('/about',methods = ['POST','GET'])
 def about():
     gc.collect()
+    print("/about")
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
@@ -116,9 +146,26 @@ def about():
                             custom_link=mylink,
                             sess_key=sess_key)
 
+
+@app.route('/api',methods = ['POST','GET'])
+def apis():
+    gc.collect()
+    print("/api")
+    print(request.method)
+    print(request.form.get('redirect'))
+    if request.method == 'POST':
+        sess_key = request.form.get('SESS_KEY')
+    if request.method == 'GET':
+        sess_key = f"{np.random.randint(0,999999):08d}"
+    return render_template('apis.html', 
+                            head1=HEADING,
+                            custom_link=mylink,
+                            sess_key=sess_key)
+
 @app.route('/',methods = ['POST', 'GET'])
 def index():
     gc.collect()
+    print("/")
     print(request.method)
     print(request.form.get('redirect'))
     if request.method == 'POST':
