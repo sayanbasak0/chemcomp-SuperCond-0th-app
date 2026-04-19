@@ -10,3 +10,4 @@ dill
 jinja2
 pip
 simplejson
+gradio>=5.0.0
