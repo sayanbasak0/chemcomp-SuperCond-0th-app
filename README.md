@@ -1,3 +1,14 @@
+---
+title: Chemcomp SuperCond App
+emoji: 🔋🧪⚗️🧊⚛️⚡
+colorFrom: red
+colorTo: yellow
+sdk: gradio
+sdk_version: 5.0.0
+app_file: app.py
+pinned: false
+---
+
 # Search for Superconductor chemical composition
 
 [![Binder](https://github.com/sayanbasak0/ising-tensorflow/blob/heroku/icons/binder_badge_logo.svg?raw=true)](https://mybinder.org/v2/git/https%3A%2F%2Fbitbucket.org%2Fsayanbasak7%2Fsc_data_inc/master?filepath=interactive_regressor.ipynb)
