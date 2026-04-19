@@ -19,4 +19,4 @@ ENV FLASK_RUN_HOST=0.0.0.0
 # Start the application
 # If you use 'python app.py', ensure your app.py ends with: 
 # app.run(host='0.0.0.0', port=7860)
-CMD ["python", "app.py"]
+CMD ["python", "app_dock.py"]
