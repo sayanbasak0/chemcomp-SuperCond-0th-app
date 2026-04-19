@@ -3,8 +3,7 @@ title: Chemcomp SuperCond App
 emoji: 🔋🧪⚗️🧊⚛️⚡
 colorFrom: red
 colorTo: yellow
-sdk: gradio
-sdk_version: 5.0.0
+sdk: docker
 app_file: app_dock.py
 pinned: false
 ---
