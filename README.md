@@ -1,10 +1,9 @@
 ---
 title: Chemcomp SuperCond App
-emoji: 🔋🧪⚗️🧊⚛️⚡
+emoji: 🧪
 colorFrom: red
 colorTo: yellow
 sdk: docker
-app_file: app_dock.py
 pinned: false
 ---
 

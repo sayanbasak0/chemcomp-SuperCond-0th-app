@@ -210,5 +210,5 @@ if __name__== '__main__':
                 fileSessKeys.append(fileSessKey)
     
     # app.run(port=8000, debug=True)
-    app.run(host="0.0.0.0", port=7860)
+    app.run(port=33507)
 
